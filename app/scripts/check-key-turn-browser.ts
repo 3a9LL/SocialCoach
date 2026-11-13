@@ -1,3 +1,4 @@
+import { pickL } from "../src/data/taxonomy";
 /** Disposable browser fixture; every model/telemetry request is intercepted. */
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
@@ -31,7 +32,7 @@ function routes(){
  browser(['network','route','**/api/assess','--body',JSON.stringify(report(after))+'\n@@final\n'+JSON.stringify(report(after))]);
 }
 function openFixture(lang:'zh'|'en',theme:'light'|'dark'){
- const source={...parent,messages:[{...parent.messages[0],text:scenario.opening.text[lang]},...parent.messages.slice(1)]};
+ const source={...parent,messages:[{...parent.messages[0],text:pickL(scenario.opening.text, lang)},...parent.messages.slice(1)]};
  const value=JSON.stringify({version:0,state:parseArchive({profile:{name:'Browser fixture',bio:'',goals:['communication'],contexts:[],lang,createdAt:1},sessions:[source],settings:{tts:false,telemetry:false,theme}})});
  evaluate(`localStorage.setItem('socialcoach.v1',${JSON.stringify(value)});sessionStorage.clear();true`);
  browser(['open',base+'/practice/'+parent.id]);wait("!!document.querySelector('#key-turn-entry')");

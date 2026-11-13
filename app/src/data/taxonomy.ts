@@ -4,9 +4,17 @@
  *  - 34 social skills grouped under those competencies
  *  - 7 scenario context categories with 26 detailed types
  */
-export type Lang = "zh" | "en";
-export type L = { zh: string; en: string };
-export const L = (zh: string, en: string): L => ({ zh, en });
+export type Lang = "zh" | "en" | "ru";
+/** Localized text. `ru` is optional: content without a Russian version falls back to English (see `pickL`). */
+export type L = { zh: string; en: string; ru?: string };
+export const L = (zh: string, en: string, ru?: string): L => (ru === undefined ? { zh, en } : { zh, en, ru });
+/** Read a localized value; Russian falls back to English when no translation exists. */
+export function pickL(value: L, lang: Lang): string;
+export function pickL(value: L | undefined, lang: Lang): string | undefined;
+export function pickL(value: L | undefined, lang: Lang): string | undefined {
+  if (!value) return undefined;
+  return lang === "ru" ? value.ru ?? value.en : value[lang];
+}
 
 export type CompetencyId =
   | "self-awareness"

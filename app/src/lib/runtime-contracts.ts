@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {SKILLS,CONTEXTS,COMPETENCIES,type SkillId,type ContextId,type CompetencyId} from '@/data/taxonomy';
+import {SKILLS,CONTEXTS,COMPETENCIES,type SkillId,type ContextId,type CompetencyId,type Lang} from '@/data/taxonomy';
 import type {Scenario} from '@/data/corpus/types';
 import {jsonCall,LLMError,type JSONCallOpts,type LLM} from './llm-core';
 import {pick} from './i18n';
@@ -8,7 +8,7 @@ export const SkillSchema=z.enum(SKILLS.map(s=>s.id) as [SkillId,...SkillId[]]);
 export const ContextSchema=z.enum(CONTEXTS.map(c=>c.id) as [ContextId,...ContextId[]]);
 const CompetencySchema=z.enum(COMPETENCIES.map(c=>c.id) as [CompetencyId,...CompetencyId[]]);
 const text=z.string();
-export const LocalizedSchema=z.object({zh:text,en:text});
+export const LocalizedSchema=z.object({zh:text,en:text,ru:text.optional()});
 const content=LocalizedSchema.refine(v=>!!v.zh.trim()&&!!v.en.trim(),'Both language fields must contain text');
 const character=z.object({id:text.regex(/^[a-zA-Z0-9_-]{1,100}$/),name:content,role:content,personality:LocalizedSchema,stance:LocalizedSchema,hidden:LocalizedSchema.optional(),playable:z.boolean().optional(),hue:z.number().finite()});
 export const ScenarioSchema=z.object({
@@ -24,7 +24,7 @@ export const ScenarioSchema=z.object({
  if(!s.characters.some(c=>c.id===s.opening.characterId))ctx.addIssue({code:'custom',path:['opening'],message:'Opening speaker must belong to the cast'});
  if(s.custom&&(!s.characters.some(c=>c.id==='you'&&c.playable)||s.opening.characterId==='you'||s.characters.filter(c=>c.id!=='you').some(c=>c.playable)))ctx.addIssue({code:'custom',path:['characters'],message:'Custom practice needs the learner and at least one NPC opening'});
 });
-export function validateScenario(value:unknown,lang:"zh"|"en"="zh"):Scenario {
+export function validateScenario(value:unknown,lang:Lang="zh"):Scenario {
  const parsed=ScenarioSchema.safeParse(value);
  if(!parsed.success)throw new LLMError(pick({zh:'练习资料不完整，请重新打开或生成场景。',en:'The practice context is incomplete. Please reopen or regenerate it.'},lang),400);
  return parsed.data as Scenario;
@@ -32,7 +32,7 @@ export function validateScenario(value:unknown,lang:"zh"|"en"="zh"):Scenario {
 export const AdaptationSchema=z.object({learnerCharacterId:text.min(1),briefing:text.trim().min(1).max(10000),objectives:z.array(text.trim().min(1).max(2000)).min(1).max(10),focus:text.trim().min(1).max(3000),why:text.max(3000).optional()});
 
 /** One bounded schema repair. Parsing alone never grants a typed result. */
-export async function validatedJSON<T>(opts:JSONCallOpts,llm:LLM,schema:z.ZodType<T>,lang:'zh'|'en'):Promise<T>{
+export async function validatedJSON<T>(opts:JSONCallOpts,llm:LLM,schema:z.ZodType<T>,lang:Lang):Promise<T>{
  let correction='';
  for(let attempt=0;attempt<2;attempt++){
   opts.signal?.throwIfAborted();

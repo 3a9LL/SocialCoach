@@ -90,7 +90,7 @@ export const batchSchema = z.object({
   id: z.string().uuid(),
   /** Random, per browser origin, cleared with the rest of the learner's data. */
   device: z.string().uuid(),
-  lang: z.enum(["zh", "en"]),
+  lang: z.enum(["zh", "en", "ru"]),
   events: z.array(eventSchema).min(1).max(20),
 }).strict();
 export type TrackBatch = z.infer<typeof batchSchema>;

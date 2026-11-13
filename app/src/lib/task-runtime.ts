@@ -1,10 +1,11 @@
 import {pick} from './i18n';
 import {LLMError,systemParts,type LLM,type ChatOpts} from './llm-core';
+import type {Lang} from '@/data/taxonomy';
 
 export const TASK_LIMITS={schedule:[110000,6],roleplay:[55000,2],assess:[165000,8],reflect:[85000,4],hint:[25000,1],rehearse:[110000,4],pattern:[55000,2],'debrief-chat':[85000,4],dinner:[110000,4]} as const;
 export type ModelTask=keyof typeof TASK_LIMITS;
 /** One deadline and call budget, including repairs, on server and BYOK. */
-export function taskLLM(llm:LLM,task:ModelTask,signal?:AbortSignal,onCall?:(event:{task:ModelTask;call:number;durationMs:number;ok:boolean;inputBytes:number;maxOutput:number})=>void,lang:"zh"|"en"="zh"):LLM{
+export function taskLLM(llm:LLM,task:ModelTask,signal?:AbortSignal,onCall?:(event:{task:ModelTask;call:number;durationMs:number;ok:boolean;inputBytes:number;maxOutput:number})=>void,lang:Lang="zh"):LLM{
  const [timeout,maxCalls]=TASK_LIMITS[task];
  const deadline=AbortSignal.timeout(timeout),combined=signal?AbortSignal.any([signal,deadline]):deadline;
  let calls=0;

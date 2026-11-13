@@ -1,5 +1,5 @@
 import type { Scenario } from "@/data/corpus/types";
-import { COMPETENCIES, skillById, type CompetencyId, type Lang, type SkillId } from "@/data/taxonomy";
+import { pickL, COMPETENCIES, skillById, type CompetencyId, type Lang, type SkillId } from "@/data/taxonomy";
 import type { ScheduleResult } from "./client-api";
 import { uid } from "./format";
 import type { ChatMessage, Proficiency, Session } from "./types";
@@ -50,7 +50,7 @@ export function historyFor(sessions: Session[], lang: Lang) {
       nextStep:s.report?.nextStep?.slice(0,2000),
       reflections:(s.reflections??[]).slice(-3).map(r=>({question:r.question.slice(0,2000),answer:r.answer.slice(0,2000)})),
       scenarioId: s.scenario.id,
-      title: s.scenario.title[lang],
+      title: pickL(s.scenario.title, lang),
       skills: s.scenario.skills,
       context: s.scenario.context,
       outcome: s.outcome,

@@ -64,7 +64,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     // onboarding there is no profile, and the document would keep claiming
     // zh-CN to screen readers and translation prompts on an English browser.
     const pageLang=challenge&&path.endsWith("/en")?"en":challenge?"zh":lang;
-    document.documentElement.lang = pageLang === "zh" ? "zh-CN" : "en";
+    document.documentElement.lang = pageLang === "zh" ? "zh-CN" : pageLang;
   }, [lang,challenge,path]);
 
   // An explicit choice pins the palette; "system" removes the attribute so the

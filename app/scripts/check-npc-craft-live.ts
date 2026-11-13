@@ -1,3 +1,4 @@
+import { pickL } from "../src/data/taxonomy";
 /** Opt-in, bounded synthetic before/after replay. No private archives are read.
  * node --env-file=.env.local --import tsx scripts/check-npc-craft-live.ts baseline|candidate|final
  * Original fictional fixtures: wiki/specs/spec-npc-craft.md. */
@@ -42,7 +43,7 @@ async function main(){
    results.push({id:fixture.id,kind:'3d',expected:fixture.expected,input,output,calls,inputBytes,durationMs:Math.round(performance.now()-start)});
   }else{
    const lang:Lang=index===fixtures.length?'zh':'en',scenario=SCENARIOS.find(s=>s.id==='declining-extra-hours')!,learnerCharacterId=scenario.characters.find(c=>c.playable)!.id;
-   const messages:ChatMessage[]=[{id:'opening',role:'npc',characterId:scenario.opening.characterId,text:scenario.opening.text[lang],ts:1},{id:'player',role:'learner',text:lang==='zh'?'今晚是父亲生日，我不能留下。不是不管项目，我可以明早先看问题。':'It’s my father’s birthday tonight. I cannot stay. I can discuss checking the problem tomorrow morning; that is not a promise to finish it.',ts:2}];
+   const messages:ChatMessage[]=[{id:'opening',role:'npc',characterId:scenario.opening.characterId,text:pickL(scenario.opening.text, lang),ts:1},{id:'player',role:'learner',text:lang==='zh'?'今晚是父亲生日，我不能留下。不是不管项目，我可以明早先看问题。':'It’s my father’s birthday tonight. I cannot stay. I can discuss checking the problem tomorrow morning; that is not a promise to finish it.',ts:2}];
    const input={scenario,learnerCharacterId,messages,lang};
    const raw=await runRoleplay(input,taskLLM(measured,'roleplay',AbortSignal.timeout(35000),undefined,lang),FAST_MODEL,d=>{visible+=d;});
    const output=parseRoleplay(raw,scenario.characters.filter(c=>c.id!==learnerCharacterId).map(c=>c.id));

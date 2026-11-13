@@ -58,7 +58,7 @@ function deviceSpeech(text: string, lang: Lang, speaker: SpeakerVoice | undefine
     if (typeof speechSynthesis === "undefined") throw new Error("No device speech");
     const u = new SpeechSynthesisUtterance(text);
     utterance = u;
-    u.lang = lang === "zh" ? "zh-CN" : "en-US";
+    u.lang = lang === "zh" ? "zh-CN" : lang === "ru" ? "ru-RU" : "en-US";
     u.rate = speaker?.age === "mature" ? .96 : 1.02;
     u.pitch = speaker?.feminine ? 1.04 : speaker?.age === "mature" ? .94 : 1;
     const voices = speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith(lang));
@@ -157,6 +157,6 @@ export function recognitionError(code: string | undefined, lang: Lang): string |
   };
   // The learner pressed stop; that is not a failure.
   if (code === "aborted") return null;
-  const table = lang === "en" ? en : zh;
-  return table[code ?? ""] ?? (lang === "en" ? "Speech recognition failed" : "识别失败");
+  const table = lang === "zh" ? zh : en;
+  return table[code ?? ""] ?? (lang === "zh" ? "识别失败" : "Speech recognition failed");
 }

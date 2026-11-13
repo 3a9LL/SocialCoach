@@ -8,7 +8,7 @@ import { Button, Chip, ChoiceGroup, Empty, IconButton, Page } from "@/components
 import { SCENARIOS } from "@/data/corpus";
 import { SCENARIOS_E } from "@/data/corpus/scenarios-e";
 import type { Scenario } from "@/data/corpus/types";
-import { CONTEXTS, SKILLS, contextById, skillById, type ContextId, type SkillId } from "@/data/taxonomy";
+import { pickL, CONTEXTS, SKILLS, contextById, skillById, type ContextId, type SkillId } from "@/data/taxonomy";
 import { useApp, useLang } from "@/store/useApp";
 import { pick, t } from "@/lib/i18n";
 import { buildSession } from "@/lib/session-utils";
@@ -194,7 +194,7 @@ export default function Arena() {
                 <p className="text-[12px] text-ink-3 mb-2">{pick(copy.skills, lang)}</p>
                 <ChoiceGroup className="flex flex-wrap gap-2" label={pick(copy.skills, lang)}>
                   <Chip small active={!skill} onClick={() => setSkill(null)}>{t(lang, "arena_all")}</Chip>
-                  {orderedSkills.map((s) => <Chip key={s.id} small active={skill === s.id} onClick={() => setSkill(skill === s.id ? null : s.id)}>{s.name[lang]}</Chip>)}
+                  {orderedSkills.map((s) => <Chip key={s.id} small active={skill === s.id} onClick={() => setSkill(skill === s.id ? null : s.id)}>{pickL(s.name, lang)}</Chip>)}
                 </ChoiceGroup>
               </div>
             </div>
@@ -203,10 +203,10 @@ export default function Arena() {
             <Chip active={ctx === "all" && !recent} onClick={() => setCtx("all")}>{t(lang, "arena_all")}<span className="num">{all.length}</span></Chip>
             <Chip sharedSelection={false} active={recent} onClick={() => setFilter("collection", recent ? null : "recent")}>{t(lang, "arena_recent")}<span className="num">{RECENT_IDS.size}</span></Chip>
             {customScenarios.length > 0 && <Chip active={ctx === "mine"} onClick={() => setCtx("mine")}>{t(lang, "custom_badge")}<span className="num">{customScenarios.length}</span></Chip>}
-            {CONTEXTS.map((c) => <Chip key={c.id} active={ctx === c.id} onClick={() => setCtx(ctx === c.id ? "all" : c.id)}>{c.name[lang]}<span className="num">{all.filter((s) => s.context === c.id).length}</span></Chip>)}
+            {CONTEXTS.map((c) => <Chip key={c.id} active={ctx === c.id} onClick={() => setCtx(ctx === c.id ? "all" : c.id)}>{pickL(c.name, lang)}<span className="num">{all.filter((s) => s.context === c.id).length}</span></Chip>)}
           </ChoiceGroup>
           {extraFilters > 0 && <div className="arena-selected-filters flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-ink-2" role="status">
-            {skill && <span>{skillById(skill).name[lang]}</span>}
+            {skill && <span>{pickL(skillById(skill).name, lang)}</span>}
             {difficulty !== "all" && <span>{t(lang, `diff_${difficulty}` as "diff_1")}</span>}
             {practiced !== "all" && <span>{t(lang, practiced === "new" ? "arena_status_new" : "arena_status_done")}</span>}
             <button onClick={reset} className="press min-h-11 text-accent-deep">{t(lang, "arena_reset")}</button>
@@ -220,9 +220,9 @@ export default function Arena() {
           </div>
           <div className="arena-picks grid md:grid-cols-3">
             {forYou.map((sc) => <button key={sc.id} onClick={() => start(sc)} className="arena-pick press text-left flex flex-col gap-3">
-              <span className="flex justify-between gap-3 text-[12px] text-ink-3"><span>{contextById(sc.context).name[lang]}</span><span className="num">{sc.minutes} {t(lang, "min")} · {t(lang, `diff_${sc.difficulty}` as "diff_1")}</span></span>
-              <span className="flex items-start justify-between gap-4"><span className="font-semibold text-[19px] leading-snug">{sc.title[lang]}</span><ArrowUpRight size={18} className="text-ink-3 shrink-0 mt-1" aria-hidden /></span>
-              <span className="text-[14px] text-ink-2 leading-relaxed">{sc.hook[lang]}</span>
+              <span className="flex justify-between gap-3 text-[12px] text-ink-3"><span>{pickL(contextById(sc.context).name, lang)}</span><span className="num">{sc.minutes} {t(lang, "min")} · {t(lang, `diff_${sc.difficulty}` as "diff_1")}</span></span>
+              <span className="flex items-start justify-between gap-4"><span className="font-semibold text-[19px] leading-snug">{pickL(sc.title, lang)}</span><ArrowUpRight size={18} className="text-ink-3 shrink-0 mt-1" aria-hidden /></span>
+              <span className="text-[14px] text-ink-2 leading-relaxed">{pickL(sc.hook, lang)}</span>
             </button>)}
           </div>
         </section>}
@@ -241,15 +241,15 @@ export default function Arena() {
               const count = counts.get(sc.id) ?? 0;
               return <button key={sc.id} onClick={() => start(sc)} className="arena-row notebook-row group text-left flex items-start gap-4 py-5">
                 <span className="flex-1 min-w-0 flex flex-col gap-2">
-                  <span className="flex flex-wrap items-center gap-2"><span className="font-semibold text-[17px] leading-snug">{sc.title[lang]}</span>{sc.custom && <span className="text-[11px] text-accent-deep">{t(lang, "custom_badge")}</span>}</span>
-                  <span className="text-[14px] text-ink-2 leading-relaxed max-w-[var(--measure)]">{sc.hook[lang]}</span>
+                  <span className="flex flex-wrap items-center gap-2"><span className="font-semibold text-[17px] leading-snug">{pickL(sc.title, lang)}</span>{sc.custom && <span className="text-[11px] text-accent-deep">{t(lang, "custom_badge")}</span>}</span>
+                  <span className="text-[14px] text-ink-2 leading-relaxed max-w-[var(--measure)]">{pickL(sc.hook, lang)}</span>
                   <span className="arena-metadata flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-ink-2">
-                    <span className="font-medium">{contextById(sc.context).name[lang]}</span>
+                    <span className="font-medium">{pickL(contextById(sc.context).name, lang)}</span>
                     <span>{t(lang, `diff_${sc.difficulty}` as "diff_1")}</span>
                     <span className="num">{sc.minutes} {t(lang, "min")}</span>
                     {count > 0 && <span className="text-teal">{t(lang, "arena_practiced", { n: count })}</span>}
                   </span>
-                  <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-ink-3"><span>{pick(copy.skills,lang)}</span>{sc.skills.slice(0, 2).map((id) => <span key={id} className="text-ink-2">{skillById(id).name[lang]}</span>)}</span>
+                  <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-ink-3"><span>{pick(copy.skills,lang)}</span>{sc.skills.slice(0, 2).map((id) => <span key={id} className="text-ink-2">{pickL(skillById(id).name, lang)}</span>)}</span>
                 </span>
                 <ArrowRight size={16} className="shrink-0 mt-1 text-ink-3 group-hover:text-ink hidden md:block" aria-hidden />
               </button>;

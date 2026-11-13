@@ -1,4 +1,5 @@
 'use client';
+import { pickL } from "@/data/taxonomy";
 import {useEffect,useRef,useState} from 'react';
 import {Copy,Download,Share2} from 'lucide-react';
 import {Sheet,Button,useToast} from '../ui';
@@ -39,7 +40,7 @@ export function SharePractice({open,onClose,session,stars,quality,lang}:{open:bo
   <div className="grid md:grid-cols-2 gap-5 items-start">
    <div className="flex flex-col gap-4">
     <label className="flex flex-col gap-2 text-[14px]">{text('headline')}<textarea rows={3} maxLength={72} value={card.title} onChange={e=>setCard({...card,title:e.target.value})} className="writing-field p-3 text-base"/></label>
-    <Button variant="ghost" onClick={()=>setCard({...card,title:session.scenario.title[lang].slice(0,72)})}>{text('scene')}</Button>
+    <Button variant="ghost" onClick={()=>setCard({...card,title:pickL(session.scenario.title, lang).slice(0,72)})}>{text('scene')}</Button>
     <label className="flex flex-col gap-2 text-[14px]">{text('caption')}<textarea rows={3} maxLength={140} value={card.caption} onChange={e=>setCard({...card,caption:e.target.value})} className="writing-field p-3 text-base"/></label>
     <label className="flex items-center gap-3 min-h-11 text-[14px]"><input type="checkbox" checked={include} disabled={!passages.length} onChange={e=>{setInclude(e.target.checked);if(e.target.checked&&selectedPassage===null){setSelectedPassage(passages[0]?.id??null);setCard({...card,quote:passages[0]?.text.slice(0,160)??''});}}}/>{text('include')}</label>
     {include&&<div className="flex flex-col gap-3"><label className="flex flex-col gap-2 text-[14px]">{text('source')}<select className="bg-card p-3 rounded-xl border border-line max-w-full" value={selectedPassage??passages[0]?.id??''} onChange={e=>{setSelectedPassage(e.target.value);setCard({...card,quote:passages.find(p=>p.id===e.target.value)?.text.slice(0,160)??''});}}>{passages.map((p,i)=><option key={p.id} value={p.id}>{i+1} · {p.text.slice(0,24)}</option>)}</select></label><label className="flex flex-col gap-2 text-[14px]">{text('quote')}<textarea rows={4} maxLength={160} value={card.quote} onChange={e=>setCard({...card,quote:e.target.value})} className="writing-field p-3 text-base"/></label></div>}

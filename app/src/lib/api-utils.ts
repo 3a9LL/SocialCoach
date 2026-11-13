@@ -10,7 +10,7 @@ export function fail(e: unknown) {
   return NextResponse.json({ error: message, modelIssue: modelIssue ?? null,...(retryAt?{retryAt}:{}) }, { status });
 }
 
-export const asLang = (v: unknown): Lang => (v === "en" ? "en" : "zh");
+export const asLang = (v: unknown): Lang => (v === "en" || v === "ru" ? v : "zh");
 
 /**
  * Run a streaming task and return its deltas as a plain text response.

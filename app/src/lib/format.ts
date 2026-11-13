@@ -12,7 +12,7 @@ export function relDate(ts: number, lang: Lang): string {
   y.setDate(now.getDate() - 1);
   if (sameDay) return lang === "zh" ? "今天" : "Today";
   if (d.toDateString() === y.toDateString()) return lang === "zh" ? "昨天" : "Yesterday";
-  return d.toLocaleDateString(lang === "zh" ? "zh-CN" : "en-US", { month: "short", day: "numeric" });
+  return d.toLocaleDateString(lang === "zh" ? "zh-CN" : lang === "ru" ? "ru-RU" : "en-US", { month: "short", day: "numeric" });
 }
 
 /**

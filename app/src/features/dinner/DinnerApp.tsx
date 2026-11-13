@@ -62,7 +62,8 @@ function initial(lang:Lang):{save:Save|null;corrupt:string|null;pendingRestart?:
 function download(data:unknown,name:string) { const blob=new Blob([typeof data==='string'?data:JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000); }
 
 export default function App() {
-  const mainLang=useLang();
+  // The 3D scene has Chinese and English content only; Russian readers get English.
+  const appLang=useLang(),mainLang:Lang=appLang==="ru"?"en":appLang;
   const router=useRouter();
   const enteredAt=useRef(0);
   useEffect(()=>{enteredAt.current=Date.now();},[]);

@@ -1,4 +1,5 @@
 'use client';
+import { pickL } from "@/data/taxonomy";
 import {useEffect,useRef} from 'react';
 import {Sheet} from '@/components/ui';
 import {pick} from '@/lib/i18n';
@@ -25,7 +26,7 @@ export function TranscriptReader({session,lang,selection,onClose}:{session:Sessi
    const mine=m.role==='learner',character=session.scenario.characters.find(c=>c.id===m.characterId),highlight=m.id===focusedId;
    return <li key={m.id} data-line-id={m.id} className={highlight?'transcript-highlight':undefined}>
     <span className="transcript-index num" aria-hidden>{i+1}</span>
-    <div><p className="text-[13px] font-semibold text-ink-2 mb-1">{mine?pick(L.you,lang):character?.name[lang]??pick(L.event,lang)}{highlight&&<span className="ml-3 text-accent-deep">{pick(L.focus,lang)}</span>}</p><p className={`text-[16px] leading-relaxed whitespace-pre-wrap break-words ${m.role==='event'?'italic text-ink-3':mine?'text-ink':'text-ink-2'}`}>{m.text}</p></div>
+    <div><p className="text-[13px] font-semibold text-ink-2 mb-1">{mine?pick(L.you,lang):pickL(character?.name, lang)??pick(L.event,lang)}{highlight&&<span className="ml-3 text-accent-deep">{pick(L.focus,lang)}</span>}</p><p className={`text-[16px] leading-relaxed whitespace-pre-wrap break-words ${m.role==='event'?'italic text-ink-3':mine?'text-ink':'text-ink-2'}`}>{m.text}</p></div>
    </li>;
   })}</ol>
  </Sheet>;

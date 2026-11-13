@@ -5,7 +5,7 @@ import {ArrowUpRight,MessageSquareText} from 'lucide-react';
 import {useLang} from '@/store/useApp';
 import {pick} from '@/lib/i18n';
 import type {PracticeComparison as Comparison} from '@/lib/practice-comparison';
-import {skillById} from '@/data/taxonomy';
+import { pickL,skillById} from '@/data/taxonomy';
 import type {Session} from '@/lib/types';
 import {TranscriptReader} from './TranscriptReader';
 
@@ -30,7 +30,7 @@ export function PracticeComparison({session,comparison}:{session:Session;compari
   <div className="flex items-center gap-2"><MessageSquareText size={18} className="text-teal" aria-hidden/><h2 id="comparison-title" className="text-[17px] font-semibold">{pick(copy.title,lang)}</h2></div>
    <p className="text-[14px] leading-relaxed text-ink-2">{pick(copy.intro,lang)}</p>
    <div className="flex flex-col gap-5">{comparison.rows.map(row=><article key={row.skill} className="card p-4 sm:p-5 flex flex-col gap-4">
-    <h3 className="text-[14px] font-semibold text-ink-2">{skillById(row.skill).name[lang]}</h3>
+    <h3 className="text-[14px] font-semibold text-ink-2">{pickL(skillById(row.skill).name, lang)}</h3>
     <div className="grid gap-5 sm:grid-cols-2">{([{label:copy.previous,record:comparison.previous,rating:row.previous},{label:copy.current,record:session,rating:row.current}]).map(({label,record,rating})=><div key={record.id} className="min-w-0 flex flex-col gap-2">
      <p className="eyebrow text-ink-2">{pick(label,lang)} · <time dateTime={new Date(record.startedAt).toISOString()}>{new Date(record.startedAt).toLocaleDateString(lang==='zh'?'zh-CN':'en-US',{month:'short',day:'numeric'})}</time></p>
      <button type="button" onClick={()=>setSelection({session:record,quote:rating.evidence})} aria-label={`${pick(copy.source,lang)} · ${pick(label,lang)}`} className="press min-h-11 text-left rounded-xl bg-inset px-4 py-3 hover:bg-slab hover:text-slab-ink transition-colors">

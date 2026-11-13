@@ -1,3 +1,4 @@
+import { pickL } from "../src/data/taxonomy";
 /** Real-model fictional replay. Baseline differs ONLY by the authored direction field. */
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
@@ -27,7 +28,7 @@ async function main(){
    const results=await Promise.allSettled(paths.slice(offset,offset+3).map(async test=>{
     const original=scenarioById(test.id)!;
     const scenario=label==='baseline'?{...original,simulationDirection:undefined}:original;
-    const messages:ChatMessage[]=[{id:'opening',role:'npc',characterId:scenario.opening.characterId,text:scenario.opening.text[test.lang],ts:0}];
+    const messages:ChatMessage[]=[{id:'opening',role:'npc',characterId:scenario.opening.characterId,text:pickL(scenario.opening.text,test.lang),ts:0}];
     for(let i=0;i<test.lines.length;i++){
      const learner=test.lines[i];messages.push({id:'u'+i,role:'learner',text:learner,ts:i*2+1});
      const start=Date.now();let preview='',modelRaw='',repairs=0,firstVisibleMs:number|undefined;

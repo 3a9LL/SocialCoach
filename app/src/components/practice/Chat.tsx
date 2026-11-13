@@ -1,4 +1,5 @@
 "use client";
+import { pickL } from "@/data/taxonomy";
 import { useCanUseModel } from "@/lib/model-access";
 import { FeedbackButton } from "@/components/Feedback";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -35,7 +36,7 @@ export function Chat({ session }: { session: Session }) {
   const sc = session.scenario;
   const npcs = useMemo(() => npcsOf(sc, session.learnerCharacterId), [sc, session.learnerCharacterId]);
   const npcIds = useMemo(() => npcs.map((c) => c.id), [npcs]);
-  const learnerName = profile?.name || sc.characters.find((c) => c.id === session.learnerCharacterId)?.name[lang] || "";
+  const learnerName = profile?.name || pickL(sc.characters.find((c) => c.id === session.learnerCharacterId)?.name, lang) || "";
 
   const [input, setInput, draftSaved] = useSessionDraft(session.id);
   const [awayFromLatest, setAwayFromLatest] = useState(false);
@@ -84,19 +85,19 @@ export function Chat({ session }: { session: Session }) {
 
   const learnerTurns = session.messages.filter((m) => m.role === "learner").length;
   const checkpoint = practiceCheckpoint(session);
-  const objectives = session.adaptation?.objectives ?? sc.objectives.map((o) => o[lang]);
+  const objectives = session.adaptation?.objectives ?? sc.objectives.map((o) => pickL(o, lang));
   const trail = session.stanceTrail ?? [];
   // Before the first turn reports one, show them where the scenario put them.
   const stance = trail.at(-1) ?? 20;
   const prevStance = trail.at(-2);
   // With one NPC the meter is theirs by name; with two it is the room's.
-  const stanceName = npcs.length === 1 ? npcs[0].name[lang] : t(lang, "pr_stance_label");
+  const stanceName = npcs.length === 1 ? pickL(npcs[0].name, lang) : t(lang, "pr_stance_label");
 
   // opening line (idempotent: read the live store so a double-invoked effect can't duplicate it)
   useEffect(() => {
     const live = useApp.getState().sessions.find((x) => x.id === session.id);
     if (live && live.messages.length === 0) {
-      appendMessage(session.id, { id: `${session.id}-opening`, role: "npc", characterId: sc.opening.characterId, text: sc.opening.text[lang], ts: Date.now() });
+      appendMessage(session.id, { id: `${session.id}-opening`, role: "npc", characterId: sc.opening.characterId, text: pickL(sc.opening.text, lang), ts: Date.now() });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -326,7 +327,7 @@ export function Chat({ session }: { session: Session }) {
   const last = lastSpoken(session.messages);
   const armed = !!last && last.role === "npc" && last.text !== "" && !busy && !ending && !checkpoint;
   const speaker = (last?.role === "npc" ? sc.characters.find((c) => c.id === last.characterId) : undefined) ?? npcs[0];
-  const speakerName = speaker?.name[lang] ?? "";
+  const speakerName = pickL(speaker?.name, lang) ?? "";
 
   const lapse = useCallback(() => {
     const live = useApp.getState().sessions.find((s) => s.id === session.id);
@@ -504,7 +505,7 @@ export function Chat({ session }: { session: Session }) {
         <PracticeJourney phase={1} onBack={() => setEndOpen(true)} backLabel={t(lang, "pr_leave_options")} actions={<FeedbackButton compact />} />
         <div className="flex items-center gap-2 py-2">
           <div className="flex-1 min-w-0 px-1">
-            <h1 className="text-[16px] font-semibold truncate">{sc.title[lang]}</h1>
+            <h1 className="text-[16px] font-semibold truncate">{pickL(sc.title, lang)}</h1>
             <p className="text-[12px] text-ink-3 num">{t(lang, "pr_turn_progress", { n: learnerTurns })}</p>
           </div>
           <button onClick={() => setEndOpen(true)} className="press min-h-11 px-2 text-[12px] font-medium text-ink-2 whitespace-nowrap">{t(lang, "pr_review_action")}</button>
@@ -514,7 +515,7 @@ export function Chat({ session }: { session: Session }) {
           <div className="hidden sm:flex -space-x-2 pr-1 lg:hidden">
             {npcs.map((c) => (
               <span key={c.id} className={clsx("rounded-full ring-2 ring-paper transition-[transform,box-shadow] duration-300", ringFor(c.id, speaking, attention, speaker?.id))}>
-                <Avatar name={c.name[lang]} hue={c.hue} size={32} />
+                <Avatar name={pickL(c.name, lang)} hue={c.hue} size={32} />
               </span>
             ))}
           </div>
@@ -541,7 +542,7 @@ export function Chat({ session }: { session: Session }) {
           setAwayFromLatest(away);
         }}
         className="chat-transcript flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-5 lg:px-6 lg:py-7 flex flex-col gap-5">
-        <p className="text-center text-[12px] text-ink-3 px-6 pb-3 leading-relaxed">{sc.hook[lang]}</p>
+        <p className="text-center text-[12px] text-ink-3 px-6 pb-3 leading-relaxed">{pickL(sc.hook, lang)}</p>
         {displayMessages.map((m, i) => {
           if (m.role === "coach") {
             return (
@@ -571,9 +572,9 @@ export function Chat({ session }: { session: Session }) {
           const prevSame = displayMessages[i - 1]?.role === "npc" && displayMessages[i - 1]?.characterId === m.characterId;
           return (
             <motion.div key={m.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className="self-start max-w-[86%] flex gap-2 items-end">
-              <span className={clsx("shrink-0", prevSame && "invisible")}><Avatar name={c?.name[lang] ?? "?"} hue={c?.hue ?? 40} size={32} /></span>
+              <span className={clsx("shrink-0", prevSame && "invisible")}><Avatar name={pickL(c?.name, lang) ?? "?"} hue={c?.hue ?? 40} size={32} /></span>
               <div className="flex flex-col gap-1">
-                {!prevSame && <span className="text-[11px] text-ink-3 pl-1">{c?.name[lang]}</span>}
+                {!prevSame && <span className="text-[11px] text-ink-3 pl-1">{pickL(c?.name, lang)}</span>}
                 <div className="bubble-npc px-4 py-2.5 text-[15px] leading-relaxed whitespace-pre-wrap">{m.text || <Spinner />}</div>
               </div>
             </motion.div>
@@ -581,7 +582,7 @@ export function Chat({ session }: { session: Session }) {
         })}
         {busy && streamingMessages.length === 0 && (
           <div className="self-start flex gap-2 items-end">
-            <Avatar name={npcs[0]?.name[lang] ?? "?"} hue={npcs[0]?.hue ?? 40} size={32} />
+            <Avatar name={pickL(npcs[0]?.name, lang) ?? "?"} hue={npcs[0]?.hue ?? 40} size={32} />
             <div className="bubble-npc px-4 py-3"><Spinner /></div>
           </div>
         )}
@@ -806,11 +807,11 @@ function NpcStack({ npcs, lang, speaking, attention, speakerId }: { npcs: Charac
       {npcs.map((c) => (
         <li key={c.id} className="flex items-start gap-2.5">
           <span className={clsx("rounded-full transition-[transform,box-shadow] duration-300", ringFor(c.id, speaking, attention, speakerId) && "ring-2", ringFor(c.id, speaking, attention, speakerId))}>
-            <Avatar name={c.name[lang]} hue={c.hue} size={32} />
+            <Avatar name={pickL(c.name, lang)} hue={c.hue} size={32} />
           </span>
           <div className="min-w-0 pt-0.5">
-            <p className="text-[13px] font-semibold text-ink truncate">{c.name[lang]}</p>
-            <p className="text-[12px] text-ink-3 leading-snug">{c.role[lang]}</p>
+            <p className="text-[13px] font-semibold text-ink truncate">{pickL(c.name, lang)}</p>
+            <p className="text-[12px] text-ink-3 leading-snug">{pickL(c.role, lang)}</p>
           </div>
         </li>
       ))}

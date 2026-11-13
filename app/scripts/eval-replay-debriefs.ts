@@ -1,3 +1,4 @@
+import { pickL } from "../src/data/taxonomy";
 /** Real-model debriefs for text-play replays.
  *  npx tsx scripts/eval-replay-debriefs.ts --replay /tmp/socialcoach-text-play/replay.json --output /tmp/socialcoach-debriefs [--case id[,id]]
  *  Rebuilds each recorded conversation, runs the production assessment (including its own verification),
@@ -41,7 +42,7 @@ async function main(){
   const key=paths[next++];if(!key)return;
   const [id,lang,route]=key.split(':') as [string,Lang,string];
   const scenario=scenarioById(id)!,turns=records.filter(r=>`${r.id}:${r.lang}:${r.route}`===key).sort((a,b)=>a.turn-b.turn);
-  const messages:ChatMessage[]=[{id:'opening',role:'npc',characterId:scenario.opening.characterId,text:scenario.opening.text[lang],ts:0}];
+  const messages:ChatMessage[]=[{id:'opening',role:'npc',characterId:scenario.opening.characterId,text:pickL(scenario.opening.text, lang),ts:0}];
   turns.forEach((t,i)=>{messages.push({id:'u'+i,role:'learner',text:t.learner,ts:i*2+1});(t.npc??[]).forEach((u,n)=>messages.push({id:`n${i}-${n}`,role:'npc',characterId:u.characterId,text:u.text,ts:i*2+2}));});
   const learnerWords=messages.filter(m=>m.role==='learner').map(m=>m.text),start=Date.now();
   try{

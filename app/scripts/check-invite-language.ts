@@ -1,3 +1,4 @@
+import { pickL } from "../src/data/taxonomy";
 /** Invitations choose interface language without changing private practice records. */
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
@@ -26,9 +27,9 @@ try{
   wait("!!document.querySelector('#challenge-landing aside button')");
   assert.equal(ev('document.documentElement.lang'),lang==='en'?'en':'zh-CN');
   assert.equal(ev("localStorage.getItem('socialcoach.v1')"),raw);
-  assert.equal(ev("document.querySelector('#challenge-landing aside button').textContent"),M.title[lang]);
+  assert.equal(ev("document.querySelector('#challenge-landing aside button').textContent"),pickL(M.title, lang));
   assert.equal(ev("document.querySelector('#challenge-landing button[disabled][title]').title"),M.disabled[lang]);
-  click(M.title[lang]);wait("!!document.querySelector('dialog[open]')");
+  click(pickL(M.title, lang));wait("!!document.querySelector('dialog[open]')");
   assert(ev(`document.querySelector('dialog[open]').textContent.includes(${JSON.stringify(M.intro[lang])})`));
   assert(ev(`!!document.querySelector('dialog[open] button[aria-label="${lang==='en'?'Close':'关闭'}"]')`));
   b(['press','Escape']);click(lang==='en'?'Feedback':'反馈');wait("!!document.querySelector('dialog[open]')");

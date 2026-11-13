@@ -13,7 +13,7 @@ import { t, tList } from "@/lib/i18n";
 import { rehearse } from "@/lib/client-api";
 import { buildSession } from "@/lib/session-utils";
 import type { Scenario } from "@/data/corpus/types";
-import { contextById } from "@/data/taxonomy";
+import { pickL, contextById } from "@/data/taxonomy";
 import {RehearsalContext} from '@/components/RehearsalContext';
 import {InfoDisclosure} from '@/components/InfoDisclosure';
 import {readRehearsalDraft,REHEARSAL_DRAFT_KEY,RehearsalDescriptionSchema,type RehearsalDraft} from '@/lib/rehearsal-input';
@@ -178,8 +178,8 @@ export default function Rehearse() {
                       <button key={sc.id} onClick={() => setPreview(sc)} className="notebook-row flex items-center gap-3 py-4 text-left">
                         <ScenarioCover scenario={sc} size={44} />
                         <span className="flex-1 min-w-0">
-                          <span className="block text-[14px] font-medium truncate">{sc.title[lang]}</span>
-                          <span className="block text-[12px] text-ink-3 mt-1 truncate">{sc.hook[lang]}</span>
+                          <span className="block text-[14px] font-medium truncate">{pickL(sc.title, lang)}</span>
+                          <span className="block text-[12px] text-ink-3 mt-1 truncate">{pickL(sc.hook, lang)}</span>
                         </span>
                         <ArrowUpRight size={16} className="text-ink-3 shrink-0" />
                       </button>
@@ -205,7 +205,7 @@ export default function Rehearse() {
             <header>
               <p className="eyebrow text-teal">{t(lang, "rh_preview_ready")}</p>
               <h1 ref={previewHeading} tabIndex={-1} className="display text-[28px] mt-2">
-                {preview.title[lang]}
+                {pickL(preview.title, lang)}
               </h1>
               <p className="text-[14px] text-ink-3 mt-2">{t(lang, "rh_preview_sub")}</p>
             </header>
@@ -213,7 +213,7 @@ export default function Rehearse() {
               <div className="relative h-36 bg-paper-deep">
                 <ScenarioCover scenario={preview} full />
                 <span className="absolute left-4 top-4 h-7 px-2.5 inline-flex items-center rounded-full bg-paper/90 text-[12px] font-medium">
-                  {contextById(preview.context).name[lang]}
+                  {pickL(contextById(preview.context).name, lang)}
                 </span>
               </div>
               <div className="p-5 flex flex-col gap-4">
@@ -222,7 +222,7 @@ export default function Rehearse() {
                     <Clock3 size={14} />
                     {preview.minutes} {t(lang, "min")} · {t(lang, `diff_${preview.difficulty}` as "diff_1")}
                   </p>
-                  <p className="text-[14px] text-ink-2 mt-2 leading-relaxed">{preview.background[lang]}</p>
+                  <p className="text-[14px] text-ink-2 mt-2 leading-relaxed">{pickL(preview.background, lang)}</p>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {preview.skills.map((k) => (
@@ -235,12 +235,12 @@ export default function Rehearse() {
                     .filter((c) => c.id !== "you")
                     .map((c) => (
                       <div key={c.id} className="flex items-start gap-3">
-                        <Avatar name={c.name[lang]} hue={c.hue} size={36} />
+                        <Avatar name={pickL(c.name, lang)} hue={c.hue} size={36} />
                         <div>
                           <p className="text-[14px] font-semibold">
-                            {c.name[lang]} <span className="text-ink-3 font-normal">· {c.role[lang]}</span>
+                            {pickL(c.name, lang)} <span className="text-ink-3 font-normal">· {pickL(c.role, lang)}</span>
                           </p>
-                          <p className="text-[13px] text-ink-3 leading-snug">{c.personality[lang]}</p>
+                          <p className="text-[13px] text-ink-3 leading-snug">{pickL(c.personality, lang)}</p>
                         </div>
                       </div>
                     ))}
@@ -251,7 +251,7 @@ export default function Rehearse() {
                     {preview.objectives.map((o, i) => (
                       <li key={i} className="flex gap-2.5 text-[14px] leading-snug">
                         <span className="num text-ink-4">{i + 1}</span>
-                        {o[lang]}
+                        {pickL(o, lang)}
                       </li>
                     ))}
                   </ol>

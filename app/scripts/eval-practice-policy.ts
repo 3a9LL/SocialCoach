@@ -1,3 +1,4 @@
+import { pickL } from "../src/data/taxonomy";
 /** Optional live, synthetic regression sample; uses the configured models.
  * Run from app/: npx tsx --env-file=.env.local scripts/eval-practice-policy.ts
  * No real user transcripts. Model judgments are samples, not guarantees.
@@ -43,7 +44,7 @@ async function main() {
       const scenario = scenarioById(sample.id)!;
       const learnerCharacterId = scenario.characters.find((c) => c.playable)!.id;
       const messages: ChatMessage[] = [
-        { id: "opening", role: "npc", characterId: scenario.opening.characterId, text: scenario.opening.text[sample.lang], ts: 1 },
+        { id: "opening", role: "npc", characterId: scenario.opening.characterId, text: pickL(scenario.opening.text, sample.lang), ts: 1 },
         { id: "learner", role: "learner", text: sample.line, ts: 2 },
       ];
       const raw = await runRoleplay({ scenario, learnerCharacterId, messages, lang: sample.lang }, serverLLM, FAST_MODEL);

@@ -1,3 +1,4 @@
+import { pickL } from "../src/data/taxonomy";
 /** Synthetic live eval; npx tsx --env-file=.env.local scripts/eval-practice-continuation.ts [--baseline=/tmp/old-prompts.ts]
  * Every reply is recorded for semantic review; no real user data is used. */
 import { mkdir, writeFile } from "node:fs/promises";
@@ -97,7 +98,7 @@ async function main() {
   const only=process.argv.find(a=>a.startsWith('--only='))?.slice(7);
   const opening = (id: string, lang: Lang): ChatMessage[] => {
     const s = scenarioById(id)!;
-    return [{ id: "opening", role: "npc", characterId: s.opening.characterId, text: s.opening.text[lang], ts: 0 }];
+    return [{ id: "opening", role: "npc", characterId: s.opening.characterId, text: pickL(s.opening.text, lang), ts: 0 }];
   };
   // Independent paths run together, but each path consumes its own real replies sequentially.
   const results = await Promise.allSettled(longRuns.filter(test=>!only||test.id===only).map(async (test) => {

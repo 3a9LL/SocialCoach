@@ -1,6 +1,6 @@
 "use client";
 import { clsx } from "clsx";
-import { competencyById, skillById, type Lang, type SkillId } from "@/data/taxonomy";
+import { pickL, competencyById, skillById, type Lang, type SkillId } from "@/data/taxonomy";
 import { compColor, compSoft } from "@/lib/format";
 
 export function SkillTag({ id, lang, small, className }: { id: SkillId; lang: Lang; small?: boolean; className?: string }) {
@@ -11,14 +11,14 @@ export function SkillTag({ id, lang, small, className }: { id: SkillId; lang: La
       style={{ background: compSoft(s.competency), color: compColor(s.competency, 0.38, 0.09) }}
     >
       <span className="h-1.5 w-1.5 rounded-full" style={{ background: compColor(s.competency) }} />
-      {s.name[lang]}
+      {pickL(s.name, lang)}
     </span>
   );
 }
 
 export function CompetencyLabel({ id, lang }: { id: SkillId; lang: Lang }) {
   const c = competencyById(skillById(id).competency);
-  return <span className="eyebrow" style={{ color: compColor(c.id, 0.45, 0.09) }}>{c.name[lang]}</span>;
+  return <span className="eyebrow" style={{ color: compColor(c.id, 0.45, 0.09) }}>{pickL(c.name, lang)}</span>;
 }
 
 /**

@@ -1,6 +1,6 @@
 "use client";
 import { clsx } from "clsx";
-import { COMPETENCIES, type CompetencyId, type Lang } from "@/data/taxonomy";
+import { pickL, COMPETENCIES, type CompetencyId, type Lang } from "@/data/taxonomy";
 import { t } from "@/lib/i18n";
 import { compColor } from "@/lib/format";
 
@@ -45,7 +45,7 @@ export function Radar({
   const complete = valPts.every((p) => p[2] != null);
   return (
     <svg viewBox={`0 0 ${size} ${size}`} className={clsx("w-full h-auto", className)} role="img" aria-label={t(lang, "pg_radar")}>
-      <desc>{COMPETENCIES.map((c) => `${c.name[lang]}: ${values[c.id]?.toFixed(1) ?? t(lang, "pg_unrated")}`).join("; ")}</desc>
+      <desc>{COMPETENCIES.map((c) => `${pickL(c.name, lang)}: ${values[c.id]?.toFixed(1) ?? t(lang, "pg_unrated")}`).join("; ")}</desc>
       {[0.2, 0.4, 0.6, 0.8, 1].map((f) => (
         <polygon
           key={f}
@@ -87,9 +87,9 @@ export function Radar({
           const v = values[c.id];
           return (
             <g key={c.id} textAnchor="middle">
-              <title>{c.name[lang]}</title>
+              <title>{pickL(c.name, lang)}</title>
               <text x={Math.max(size * 0.13, Math.min(size * 0.87, p[0]))} y={p[1] - 4} fontSize={12} fill="var(--ink-2)" fontWeight={600}>
-                {lang === "zh" ? c.name[lang] : c.short[lang]}
+                {lang === "zh" ? pickL(c.name, lang) : pickL(c.short, lang)}
               </text>
               <text x={Math.max(size * 0.13, Math.min(size * 0.87, p[0]))} y={p[1] + 11} fontSize={11} fill="var(--ink-3)" className="num">
                 {v == null ? "–" : v.toFixed(1)}

@@ -75,7 +75,7 @@ export async function watched<T>(task: Task, byok: boolean, lang: Lang, run: () 
 
 const OFFLINE_MSG = { zh: "看起来断网了，连上网络后再试。", en: "You seem to be offline. Reconnect and try again." };
 function offlineError(lang?: Lang) {
-  return new ApiError(OFFLINE_MSG[lang === "en" ? "en" : "zh"], 0, "network");
+  return new ApiError(OFFLINE_MSG[lang === "zh" ? "zh" : "en"], 0, "network");
 }
 async function safeFetch(url: string, init: RequestInit, lang?: Lang) {
   if (typeof navigator !== "undefined" && navigator.onLine === false) throw offlineError(lang);
@@ -163,10 +163,10 @@ export async function assessStream(
     const err = full.indexOf(ERR);
     if (err !== -1) throw streamFailure(full.slice(err + ERR.length).trim());
     const fin = full.indexOf(FIN);
-    if (fin === -1) throw new ApiError(body.lang==='en'?'Assessment ended unexpectedly. Your transcript is saved; retry.':'复盘连接提前结束。对话已保留，请重试。',502,'stream',null);
+    if (fin === -1) throw new ApiError(body.lang!=='zh'?'Assessment ended unexpectedly. Your transcript is saved; retry.':'复盘连接提前结束。对话已保留，请重试。',502,'stream',null);
     signal?.throwIfAborted();
     try{return ReportSchema.parse(JSON.parse(full.slice(fin + FIN.length))) as Report;}
-    catch{throw new ApiError(body.lang==='en'?'The review response was incomplete. Your transcript is saved; retry.':'复盘响应不完整。对话已保留，请重试。',502,'stream',null);}
+    catch{throw new ApiError(body.lang!=='zh'?'The review response was incomplete. Your transcript is saved; retry.':'复盘响应不完整。对话已保留，请重试。',502,'stream',null);}
   },body.lang,signal));
   stage('completed');return report;
   }catch(error){stage(signal?.aborted||(error as Error)?.name==='AbortError'?'cancelled':'failed',error);throw error;}
