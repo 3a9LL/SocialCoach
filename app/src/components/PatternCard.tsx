@@ -11,7 +11,7 @@ import { SlowModelNotice } from "@/components/SlowModelNotice";
 import { useApp, useLang } from "@/store/useApp";
 import { t } from "@/lib/i18n";
 import { pattern as patternApi } from "@/lib/client-api";
-import { skillById } from "@/data/taxonomy";
+import { pickL, skillById } from "@/data/taxonomy";
 import type { PatternSession } from "@/lib/tasks/types";
 import type { Session } from "@/lib/types";
 
@@ -161,7 +161,7 @@ export function PatternCard() {
           </ul>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 pt-1">
-            {r.skill && <span className="text-[12px] text-slab-ink/60">{skillById(r.skill).name[lang]}</span>}
+            {r.skill && <span className="text-[12px] text-slab-ink/60">{pickL(skillById(r.skill).name, lang)}</span>}
             {r.nextStep && <span className="text-[13.5px] font-semibold">{r.nextStep}</span>}
           </div>
         </motion.div>

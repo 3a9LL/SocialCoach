@@ -7,7 +7,7 @@ import {LLMError} from './llm-core';
 import {RehearsalDescriptionSchema} from './rehearsal-input';
 import {KEY_TURN_LIMIT,KEY_TURN_SCENARIO} from './key-turn';
 import {scenarioById} from '@/data/corpus';
-const short=z.string().max(2000),lang=z.enum(['zh','en']);
+const short=z.string().max(2000),lang=z.enum(['zh','en','ru']);
 const turn=z.object({practiceIntent:z.string().trim().max(300).optional(),requestId:z.string().uuid().optional(),practiceMode:z.literal('key-turn').optional(),scenario:ScenarioSchema,learnerCharacterId:z.string().max(100),messages:z.array(MessageSchema).max(300),lang,learnerName:z.string().max(200).optional(),turnLimit:z.number().int().min(1).max(200).optional()}).superRefine((v,ctx)=>{
  if(v.practiceMode&&(v.scenario.id!==KEY_TURN_SCENARIO||v.scenario.custom||v.messages.filter(m=>m.role==='learner').length>KEY_TURN_LIMIT))ctx.addIssue({code:'custom',path:['practiceMode'],message:'This drill supports only the original office opening and up to four replies'});
  if(!v.scenario.characters.some(c=>c.id===v.learnerCharacterId&&c.playable))ctx.addIssue({code:'custom',path:['learnerCharacterId'],message:'An allowed playable character is required'});
@@ -49,6 +49,6 @@ export async function readTaskBody<T>(req:Request,schema:z.ZodType<T>):Promise<T
  try{for(;;){req.signal.throwIfAborted();const {value,done}=await reader.read();if(done)break;length+=value.length;if(length>MAX_TASK_BODY){await reader.cancel();throw new LLMError(tooLong,413);}chunks.push(value);}}finally{reader.releaseLock();}
  const bytes=new Uint8Array(length);let offset=0;for(const c of chunks){bytes.set(c,offset);offset+=c.length;}
  let raw:unknown;try{raw=JSON.parse(new TextDecoder().decode(bytes));}catch{throw new LLMError(pick({zh:'提交资料无法读取，请重试。',en:'The submitted data could not be read. Please retry.'},lang),400);}
- if(raw&&typeof raw==='object')raw={...raw,lang:(raw as {lang?:unknown}).lang==='en'?'en':'zh'};
+ if(raw&&typeof raw==='object')raw={...raw,lang:(raw as {lang?:unknown}).lang==='en'||(raw as {lang?:unknown}).lang==='ru'?(raw as {lang:'en'|'ru'}).lang:'zh'};
  return taskInput(schema,raw);
 }

@@ -5,6 +5,8 @@ import { THEORIES_C } from "./theories-c";
 import { SCENARIOS_C } from "./scenarios-c";
 import { SCENARIOS_D } from "./scenarios-d";
 import { SCENARIOS_E } from "./scenarios-e";
+import { SCENARIOS_ELICITATION } from "./scenarios-elicitation";
+import { THEORIES_ELICITATION } from "./theories-elicitation";
 import { CASES_C } from "./cases-c";
 import { CASES as CASES_BASE } from "./cases";
 import type { Case, Character, Scenario, Theory } from "./types";
@@ -93,8 +95,8 @@ export function withLearner(s: Scenario): Scenario {
   return { ...s, characters: [you, ...s.characters] };
 }
 
-export const SCENARIOS: Scenario[] = [...SCENARIOS_A, ...SCENARIOS_B, ...SCENARIOS_C, ...SCENARIOS_D, ...SCENARIOS_E].map(withLearner);
-export const THEORIES: Theory[] = [...THEORIES_BASE, ...THEORIES_C];
+export const SCENARIOS: Scenario[] = [...SCENARIOS_A, ...SCENARIOS_B, ...SCENARIOS_C, ...SCENARIOS_D, ...SCENARIOS_E, ...SCENARIOS_ELICITATION].map(withLearner);
+export const THEORIES: Theory[] = [...THEORIES_BASE, ...THEORIES_C, ...THEORIES_ELICITATION];
 export const CASES: Case[] = [...CASES_BASE, ...CASES_C];
 export type { Case, Scenario, Theory };
 

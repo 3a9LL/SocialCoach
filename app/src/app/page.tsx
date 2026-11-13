@@ -15,7 +15,7 @@ import { computeStreak, todayKey, useApp, useLang } from "@/store/useApp";
 import { t, tList } from "@/lib/i18n";
 import { schedule } from "@/lib/client-api";
 import { buildSession, historyFor } from "@/lib/session-utils";
-import { skillById, contextById } from "@/data/taxonomy";
+import { pickL, skillById, contextById } from "@/data/taxonomy";
 import { compColor, relDate } from "@/lib/format";
 import { ScenarioCover } from "@/components/ScenarioCover";
 
@@ -47,7 +47,7 @@ export default function Home() {
     trail.forEach((v, i) => {
       if (v < (i === 0 ? 20 : trail[i - 1])) gaveGroundOn.push(i + 1);
     });
-    return { evidence: last.report!.verdictEvidence, verdict: last.report!.verdict, title: last.scenario.title[lang], gaveGroundOn };
+    return { evidence: last.report!.verdictEvidence, verdict: last.report!.verdict, title: pickL(last.scenario.title, lang), gaveGroundOn };
   }, [orderedSessions, lang]);
 
   const hour = new Date().getHours();
@@ -130,7 +130,7 @@ export default function Home() {
             <Clock3 size={18} className="text-accent-deep shrink-0" />
             <span className="min-w-0 flex-1">
               <span className="block text-[12px] text-ink-3">{t(lang, unfinished.status === "ended" ? "home_resume_review" : "home_resume")}</span>
-              <span className="block text-[14px] font-medium truncate">{unfinished.scenario.title[lang]}</span>
+              <span className="block text-[14px] font-medium truncate">{pickL(unfinished.scenario.title, lang)}</span>
             </span>
             <span className="inline-flex items-center justify-center gap-2 min-h-11 px-4 rounded-full bg-action text-accent-ink text-[13px] font-semibold">
               {t(lang, unfinished.status === "ended" ? "home_review_action" : "home_resume_action")}<ArrowRight size={16} />
@@ -221,7 +221,7 @@ export default function Home() {
                   const s = skillById(g);
                   return (
                     <li key={g} className="flex items-center justify-between gap-3 px-4 h-12 lg:px-0">
-                      <span className="text-[14px] font-medium">{s.name[lang]}</span>
+                      <span className="text-[14px] font-medium">{pickL(s.name, lang)}</span>
                       <Level value={proficiency[g]} color={compColor(s.competency)} />
                     </li>
                   );
@@ -243,9 +243,9 @@ export default function Home() {
                       >
                         <ScenarioCover scenario={s.scenario} size={44} />
                         <div className="flex-1 min-w-0">
-                          <p className="text-[14px] font-medium truncate">{s.scenario.title[lang]}</p>
+                          <p className="text-[14px] font-medium truncate">{pickL(s.scenario.title, lang)}</p>
                           <p className="text-[12px] text-ink-3">
-                            {relDate(s.startedAt, lang)} · {contextById(s.scenario.context).name[lang]}
+                            {relDate(s.startedAt, lang)} · {pickL(contextById(s.scenario.context).name, lang)}
                           </p>
                         </div>
                         <span title={s.report?.scoringVersion === 2 ? t(lang, "rp_quality", { n: s.report.stars }) : t(lang, "rp_legacy")}>
@@ -292,15 +292,15 @@ function TodayCard({ session, onStart, onSwap, secondary }: { secondary?: boolea
             {t(lang, "scheduled_badge")}
           </span>
           <span className="h-7 px-2.5 inline-flex items-center rounded-full bg-paper/90 text-[12px] font-medium">
-            {contextById(sc.context).name[lang]}
+            {pickL(contextById(sc.context).name, lang)}
           </span>
         </div>
       </div>
       <div className="p-5 flex flex-col gap-4 lg:p-8 lg:gap-5 lg:justify-center min-w-0">
-        <p className="eyebrow hidden lg:block">{t(lang, "scheduled_badge")} <span className="px-1.5">/</span> {contextById(sc.context).name[lang]}</p>
+        <p className="eyebrow hidden lg:block">{t(lang, "scheduled_badge")} <span className="px-1.5">/</span> {pickL(contextById(sc.context).name, lang)}</p>
         <div>
-          <h2 className="display text-[26px] lg:text-[30px] leading-tight">{sc.title[lang]}</h2>
-          <p className="text-[14px] lg:text-[15.5px] text-ink-2 mt-2 lg:mt-3 leading-relaxed lg:max-w-[var(--measure)]">{sc.hook[lang]}</p>
+          <h2 className="display text-[26px] lg:text-[30px] leading-tight">{pickL(sc.title, lang)}</h2>
+          <p className="text-[14px] lg:text-[15.5px] text-ink-2 mt-2 lg:mt-3 leading-relaxed lg:max-w-[var(--measure)]">{pickL(sc.hook, lang)}</p>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {sc.skills.slice(0, 3).map((k) => (

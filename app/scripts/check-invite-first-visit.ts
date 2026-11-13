@@ -1,3 +1,4 @@
+import { pickL } from "../src/data/taxonomy";
 /** Public SSR/hydration regression: URL language wins without changing the local profile. */
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
@@ -32,7 +33,7 @@ async function main(){try{
   assert.deepEqual(ev("JSON.parse(localStorage.getItem('socialcoach.v1')).state.profile"),profile);
   assert.deepEqual(b(['errors']).errors,[]);
   const consoleOutput=b(['console']);assert(!JSON.stringify(consoleOutput).includes('hydration')&&!JSON.stringify(consoleOutput).includes('Hydration'),JSON.stringify(consoleOutput));
-  b(['find','role','button','click','--name',M.title[lang],'--exact']);b(['wait','--fn',"!!document.querySelector('dialog[open]')"]);
+  b(['find','role','button','click','--name',pickL(M.title, lang),'--exact']);b(['wait','--fn',"!!document.querySelector('dialog[open]')"]);
   assert(ev(`document.querySelector('dialog[open]').textContent.includes(${JSON.stringify(M.connect[lang])})`));
   results.push({lang,existing,profilePreserved:true,serverLanguage:true,noticeAndButtonLanguage:true,modelSheetLanguage:true,pageErrors:0});
   b(['press','Escape']);

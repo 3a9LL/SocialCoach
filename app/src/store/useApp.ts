@@ -292,7 +292,7 @@ export function computeStreak(days: string[]): number {
   return n;
 }
 
-export const useLang = (): Lang => useApp((s) => s.profile?.lang ?? s.onboardingLang ?? (typeof navigator !== "undefined" && !navigator.language.startsWith("zh") ? "en" : "zh"));
+export const useLang = (): Lang => useApp((s) => s.profile?.lang ?? s.onboardingLang ?? (typeof navigator === "undefined" ? "zh" : navigator.language.startsWith("zh") ? "zh" : navigator.language.startsWith("ru") ? "ru" : "en"));
 export const useGoals = (): SkillId[] => useApp((s) => s.profile?.goals ?? []);
 export const useContexts = (): ContextId[] => useApp((s) => s.profile?.contexts ?? []);
 

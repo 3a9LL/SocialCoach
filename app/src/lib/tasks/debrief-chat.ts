@@ -43,7 +43,7 @@ export function debriefKnowledge(input: DebriefChatInput): { theories: Theory[];
 
 export async function runDebriefChat(raw: DebriefChatInput, llm: LLM, model: string,signal?:AbortSignal,evidenceTexts?:string[]): Promise<DebriefReply> {
   const parsed = debriefInputSchema.safeParse(raw);
-  const lang = raw?.lang === "en" ? "en" : "zh";
+  const lang = raw?.lang === "en" || raw?.lang === "ru" ? raw.lang : "zh";
   if (!parsed.success) throw new LLMError(pick({ zh: "复盘问题或练习资料不完整，请检查后重试。", en: "The question or practice context is invalid. Check it and try again." }, lang), 400);
   const input = parsed.data;
   if(input.sceneContext){try{validateSceneContext(input.sceneContext,input.transcript.map((m,i)=>({id:String(i),role:m.role,text:m.text,ts:0})));}catch{throw new LLMError(pick({zh:'现场记录与原话不一致，请重新打开复盘。',en:'The scene record does not match the transcript. Please reopen the debrief.'},lang),400);}}

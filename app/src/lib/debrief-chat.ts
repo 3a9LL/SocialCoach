@@ -12,7 +12,7 @@ const evidenceItem = z.object({ evidence: text(4000), behavior: text(2000) });
 /** A deliberately public view. No NPC hidden/personality/stance or scoring fields. */
 export const debriefInputSchema = z.object({
   sceneContext:SceneContextSchema.optional(),
-  lang: z.enum(["zh", "en"]),
+  lang: z.enum(["zh", "en", "ru"]),
   practice: z.object({ title: text(1000), background: text(8000), roles: z.array(z.object({ name: text(200), role: text(500), learner: z.boolean() })).max(12) }),
   transcript: z.array(z.object({ role: z.enum(["learner", "npc"]), name: text(200), text: text(8000) })).max(301),
   report: z.object({

@@ -6,7 +6,7 @@ import type {Session,KeyTurnAttempt} from './types';
 
 const text=z.string(),strings=z.array(text),num=z.number().finite();
 export const ProficiencySchema=z.partialRecord(SkillSchema,num.min(1).max(5));
-export const ProfileSchema=z.object({name:text,bio:text,goals:z.array(SkillSchema),contexts:z.array(ContextSchema),lang:z.enum(['zh','en']),createdAt:num});
+export const ProfileSchema=z.object({name:text,bio:text,goals:z.array(SkillSchema),contexts:z.array(ContextSchema),lang:z.enum(['zh','en','ru']),createdAt:num});
 const evidence=z.object({behavior:text,evidence:text,skill:SkillSchema});
 export const ReportSchema=z.object({
  scoringVersion:z.literal(2).optional(),ratings:z.array(z.object({skill:SkillSchema,level:z.number().int().min(0).max(3),evidence:text,reason:text})).optional(),
@@ -20,7 +20,7 @@ const closure=z.object({kind:z.enum(['agreement','boundary','deferred','withdraw
 export const MetaSchema=z.object({objectiveEvidence:z.array(z.object({index:z.number().int().nonnegative(),learnerQuote:text,npcQuote:text.optional()})).optional(),objectives:z.array(z.boolean()),ended:z.boolean(),closure:closure.optional(),outcome:z.enum(['success','partial','failure']).nullable().optional(),note:text.optional(),stance:num.min(0).max(100).optional(),revealed:z.boolean().optional(),disclosures:z.array(z.object({characterId:text,quote:text})).optional()});
 export const MessageSchema=z.object({id:text.min(1),role:z.enum(['learner','npc','coach','event']),characterId:text.optional(),text,ts:num,kind:z.enum(['hint','silence']).optional(),seconds:num.optional(),meta:MetaSchema.optional()});
 const reply=z.object({evidence:text,answer:text,example:text,sources:z.array(z.object({kind:z.enum(['theory','case']),id:text}))});
-const KeyTurnSchema=z.object({version:z.literal(1),id:text.min(1),sourceMessageId:text.min(1),lang:z.enum(['zh','en']),startedAt:num,endedAt:num.optional(),revision:z.number().int().nonnegative(),status:z.enum(['active','ended','reviewed']),messages:z.array(MessageSchema),report:ReportSchema.optional()});
+const KeyTurnSchema=z.object({version:z.literal(1),id:text.min(1),sourceMessageId:text.min(1),lang:z.enum(['zh','en','ru']),startedAt:num,endedAt:num.optional(),revision:z.number().int().nonnegative(),status:z.enum(['active','ended','reviewed']),messages:z.array(MessageSchema),report:ReportSchema.optional()});
 const SessionSchema=z.object({
  practiceIntent:z.string().max(300).optional(),
  challenge:z.object({id:z.literal("office-quick-favor"),version:z.literal(1),lang:z.enum(["zh","en"])}).optional(),
@@ -36,7 +36,7 @@ const SessionSchema=z.object({
  if(s.keyTurnAttempts&&(new Set(s.keyTurnAttempts.map(a=>a.id)).size!==s.keyTurnAttempts.length||s.keyTurnAttempts.some(a=>!validKeyTurnAttempt(s as Session,a as KeyTurnAttempt))))ctx.addIssue({code:'custom',path:['keyTurnAttempts'],message:'Invalid retry checkpoint or conversation'});
 });
 export const ArchiveSchema=z.object({
- profile:ProfileSchema.nullable().default(null),onboardingLang:z.enum(['zh','en']).optional(),proficiency:ProficiencySchema.default({}),sessions:z.array(SessionSchema).default([]),customScenarios:z.array(ScenarioSchema).default([]),bookmarks:strings.default([]),practiceDays:strings.default([]),todaySessionId:text.nullable().default(null),todayDate:text.nullable().default(null),
+ profile:ProfileSchema.nullable().default(null),onboardingLang:z.enum(['zh','en','ru']).optional(),proficiency:ProficiencySchema.default({}),sessions:z.array(SessionSchema).default([]),customScenarios:z.array(ScenarioSchema).default([]),bookmarks:strings.default([]),practiceDays:strings.default([]),todaySessionId:text.nullable().default(null),todayDate:text.nullable().default(null),
  settings:z.object({tts:z.boolean(),voiceEngine:z.enum(['natural','system']).optional(),theme:z.enum(['system','light','dark']).optional(),voiceNoticeSeen:z.boolean().optional(),avatarSeed:num.optional(),avatarPortrait:text.optional(),avatarImage:text.optional(),timed:z.boolean().optional(),patience:z.union([z.literal(10),z.literal(15),z.literal(20)]).optional(),telemetry:z.boolean().optional()}).default({tts:true}),
  // Old cached conclusions lack verified identity pointers. Recompute, never
  // erase the practice transcripts on which they were based.

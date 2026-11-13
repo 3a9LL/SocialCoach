@@ -1,3 +1,4 @@
+import { pickL } from "../src/data/taxonomy";
 /** Local coach integration checks: model endpoints are intercepted, no inference is sent. */
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
@@ -66,7 +67,7 @@ try {
   }
   for (const lang of ["zh", "en"] as const) {
     welcome(lang); button(t(lang, "ob_personalize")); wait("document.querySelector('[aria-controls^=onboarding-]') !== null");
-    button(skillById("communication").name[lang]); button(t(lang, "next")); wait("document.querySelector('input[type=range]') !== null");
+    button(pickL(skillById("communication").name, lang)); button(t(lang, "next")); wait("document.querySelector('input[type=range]') !== null");
     browser(["click", "input[type=range]"]); browser(["press", "Home"]);
     for (let i = 0; i < 5; i++) browser(["press", "ArrowRight"]);
     button(t(lang, "next")); wait(`document.querySelector('h1')?.textContent === ${JSON.stringify(t(lang, "ob_ctx_title"))}`);

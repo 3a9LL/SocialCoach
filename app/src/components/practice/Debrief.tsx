@@ -23,7 +23,7 @@ import type { Character } from "@/data/corpus/types";
 import { PracticeJourney } from "./PracticeJourney";
 import { TurnMap } from "./TurnMap";
 import { caseById, theoryById } from "@/data/corpus";
-import { skillById, SKILLS, type SkillId } from "@/data/taxonomy";
+import { pickL, skillById, SKILLS, type SkillId } from "@/data/taxonomy";
 import { compColor } from "@/lib/format";
 import {SceneReview,sceneReviewCopy} from './SceneReview';
 import {TranscriptReader} from './TranscriptReader';
@@ -243,7 +243,7 @@ function HiddenReveal({
             className="flex flex-col gap-3"
           >
             <span className="eyebrow text-accent-deep">{t(lang, "pr_reveal_eyebrow")}</span>
-            <p className="display text-[21px] leading-snug">{t(lang, "pr_reveal_never", { name: cjkGap(c.name[lang]) })}</p>
+            <p className="display text-[21px] leading-snug">{t(lang, "pr_reveal_never", { name: cjkGap(pickL(c.name, lang)) })}</p>
             <blockquote className="bg-slab text-slab-ink rounded-2xl px-5 py-4 text-[17px] leading-relaxed">
               {c.hidden![lang]}
             </blockquote>
@@ -310,7 +310,7 @@ function Transcript({ session, title }: { session: Session; title?: string }) {
           const mine = m.role === "learner";
           return (
             <li key={m.id} className={clsx("text-[14px] leading-relaxed", mine && "pl-6")}>
-              <span className={clsx("font-semibold mr-1", mine ? "text-accent-deep" : "text-ink-2")}>{mine ? pick({ zh: "你", en: "You" }, lang) : c?.name[lang]}{pick({ zh: "：", en: ": " }, lang)}</span>
+              <span className={clsx("font-semibold mr-1", mine ? "text-accent-deep" : "text-ink-2")}>{mine ? pick({ zh: "你", en: "You" }, lang) : pickL(c?.name, lang)}{pick({ zh: "：", en: ": " }, lang)}</span>
               <span className={mine ? "text-ink" : "text-ink-2"}>{m.text}</span>
             </li>
           );
@@ -351,7 +351,7 @@ function ReportView({ session, report, streaming, onAgain }: { session: Session;
       <ReviewSplit lang={lang} aside={<div className="lg:sticky lg:top-6 lg:h-[calc(100dvh-5rem)] lg:overflow-y-auto"><button className="press min-h-11 text-[13px] text-action mb-2" onClick={()=>setTranscriptSelection('')}>{pick({zh:'放大阅读完整对话',en:'Read conversation in full'},lang)}</button><Transcript session={session} /></div>}>
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }} className="px-5 flex flex-col gap-9 lg:px-0">
         <header className="flex flex-col gap-3">
-          <p className="eyebrow">{t(lang, "rp_title")} · {sc.title[lang]}</p>
+          <p className="eyebrow">{t(lang, "rp_title")} · {pickL(sc.title, lang)}</p>
           {/* The verdict carries the first screen. Stars and a tally are a score,
               and a score answers a question nobody was asking; they drop below it. */}
           {report.verdictEvidence && <Quote text={report.verdictEvidence} session={session} onInspect={setTranscriptSelection} />}
@@ -457,8 +457,8 @@ function ReportView({ session, report, streaming, onAgain }: { session: Session;
         {!streaming && (theories.length > 0 || cases.length > 0) && (
           <Section title={t(lang, "rp_knowledge")} sub={report.knowledge?.whyThis}>
             <div className="flex flex-col gap-3">
-              {theories.map((th) => th && <KnowledgeCard key={th.id} kind="theory" title={th.title[lang]} source={`${th.source.book} · ${th.source.author}`} saved={bookmarks.includes(th.id)} onSave={() => toggleBookmark(th.id)} onAsk={() => assistant.current?.ask(t(lang, "da_knowledge_question", { title: th.title[lang] }))}><TheoryBody t={th} /></KnowledgeCard>)}
-              {cases.map((c) => c && <KnowledgeCard key={c.id} kind="case" title={c.title[lang]} source={`${c.source.book} · ${c.source.author}`} saved={bookmarks.includes(c.id)} onSave={() => toggleBookmark(c.id)} onAsk={() => assistant.current?.ask(t(lang, "da_knowledge_question", { title: c.title[lang] }))}><CaseBody c={c} /></KnowledgeCard>)}
+              {theories.map((th) => th && <KnowledgeCard key={th.id} kind="theory" title={pickL(th.title, lang)} source={`${th.source.book} · ${th.source.author}`} saved={bookmarks.includes(th.id)} onSave={() => toggleBookmark(th.id)} onAsk={() => assistant.current?.ask(t(lang, "da_knowledge_question", { title: pickL(th.title, lang) }))}><TheoryBody t={th} /></KnowledgeCard>)}
+              {cases.map((c) => c && <KnowledgeCard key={c.id} kind="case" title={pickL(c.title, lang)} source={`${c.source.book} · ${c.source.author}`} saved={bookmarks.includes(c.id)} onSave={() => toggleBookmark(c.id)} onAsk={() => assistant.current?.ask(t(lang, "da_knowledge_question", { title: pickL(c.title, lang) }))}><CaseBody c={c} /></KnowledgeCard>)}
             </div>
           </Section>
         )}
@@ -486,7 +486,7 @@ function ReportView({ session, report, streaming, onAgain }: { session: Session;
                 const s = skillById(k);
                 return (
                   <li key={k} className="px-4 py-3 flex items-center gap-3">
-                    <div className="flex-1"><p className="text-[14px] font-medium">{s.name[lang]}</p></div>
+                    <div className="flex-1"><p className="text-[14px] font-medium">{pickL(s.name, lang)}</p></div>
                     <span className="text-[12px] num text-moss">+{v.toFixed(1)}</span>
                     <Level value={proficiency[k]} color={compColor(s.competency)} />
                   </li>

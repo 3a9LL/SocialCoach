@@ -3,7 +3,7 @@ import { z } from "zod";
 export const SPEECH_MODEL = "mimo-v2.5-tts";
 export const SpeechInputSchema = z.object({
   text: z.string().trim().min(1).max(500),
-  lang: z.enum(["zh", "en"]),
+  lang: z.enum(["zh", "en", "ru"]),
   voice: z.enum(["白桦", "苏打", "茉莉", "冰糖", "Mia", "Chloe", "Milo", "Dean"]),
   tone: z.enum(["neutral", "firm", "gentle"]).default("neutral"),
   stream: z.boolean().default(false),

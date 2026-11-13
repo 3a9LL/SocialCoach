@@ -1,15 +1,16 @@
 import type { Scenario, Theory, Case } from "@/data/corpus/types";
-import { COMPETENCIES, CONTEXTS, SKILLS, skillById, competencyById, type Lang, type L, type SkillId } from "@/data/taxonomy";
+import { COMPETENCIES, CONTEXTS, SKILLS, skillById, competencyById, pickL, type Lang, type L, type SkillId } from "@/data/taxonomy";
 import { SCENARIO_ICON_NAMES } from "@/data/scenario-icons";
 import type { ChatMessage, Profile, Proficiency } from "./types";
 import { SCENE_CRAFT } from './scene-craft';
 import { NPC_CRAFT } from './npc-craft';
 
-export const pick = (l: L, lang: Lang) => l[lang];
+export const pick = (l: L, lang: Lang) => pickL(l, lang);
 
 const LANG_RULE: Record<Lang, string> = {
   zh: "Write every user-facing string in natural, contemporary Simplified Chinese (简体中文). Keep proper names as given. Inside JSON strings use Chinese quotation marks 「」 or “” for quoted words — never a raw ASCII double quote.",
   en: "Write every user-facing string in natural, contemporary English. Inside JSON strings use single quotes or curly quotes for quoted words — never a raw ASCII double quote.",
+  ru: "Write every user-facing string in natural, contemporary Russian (русский язык), including every character's spoken lines. Scenario material may be given in English when no Russian version exists: translate it naturally, keep proper names as given. Inside JSON strings use «» or curly quotes for quoted words — never a raw ASCII double quote.",
 };
 
 export function taxonomyBlock(): string {
@@ -298,7 +299,7 @@ ${PRACTICE_POLICY}
 ${iconBlock()}
 ${taxonomyBlock()}
 
-${LANG_RULE[lang]} Provide every text field as an object {"zh": "...", "en": "..."} but fill ONLY the "${lang}" key with real content; set the other key to an empty string "" (the app mirrors it). Keep total output compact.
+${LANG_RULE[lang]} Provide every text field as an object {"zh": "...", "en": "..."} but fill ONLY the "${lang === "ru" ? "en" : lang}" key with real content${lang === "ru" ? " (written in Russian: the app shows that key to Russian readers)" : ""}; set the other key to an empty string "" (the app mirrors it). Keep total output compact.
 
 Return ONLY JSON:
 {

@@ -1,6 +1,6 @@
-import type { L, Lang } from "@/data/taxonomy";
+import { pickL, type L, type Lang } from "@/data/taxonomy";
 
-export const pick = (value: L, lang: Lang) => value[lang];
+export const pick = (value: L, lang: Lang) => pickL(value, lang);
 
 const dict = {
   coach_identity: { zh: "SocialCoach 教练", en: "Your SocialCoach" },
@@ -539,5 +539,5 @@ export function t(lang: Lang, key: TKey, vars?: Record<string, string | number>)
 }
 
 export function tList(lang: Lang, key: TKey): string[] {
-  return dict[key][lang].split("|");
+  return pick(dict[key], lang).split("|");
 }

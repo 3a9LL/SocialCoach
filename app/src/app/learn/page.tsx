@@ -11,7 +11,7 @@ import { Chip, ChoiceGroup, Empty, Page } from "@/components/ui";
 import { SkillTag } from "@/components/SkillBits";
 import { CASES, SCENARIOS, THEORIES } from "@/data/corpus";
 import type { Case, Scenario, Theory } from "@/data/corpus/types";
-import { skillById, type Lang } from "@/data/taxonomy";
+import { pickL, skillById, type Lang } from "@/data/taxonomy";
 import { useApp, useLang } from "@/store/useApp";
 import { pick, t } from "@/lib/i18n";
 import { VIDEO_LESSONS, matchesVideo, type VideoLesson as VideoItem } from "@/data/video-lessons";
@@ -25,7 +25,7 @@ import { LanguagePicker } from "@/components/LanguagePicker";
 type LibraryItem = Theory | Case | VideoItem;
 function isVideo(item: LibraryItem): item is VideoItem { return "video" in item; }
 function itemPreview(item: LibraryItem, lang: Lang) {
-  return isVideo(item) ? pick(item.synopsis, lang) : "principle" in item ? item.principle[lang] : item.takeaway[lang];
+  return isVideo(item) ? pick(item.synopsis, lang) : "principle" in item ? pickL(item.principle, lang) : pickL(item.takeaway, lang);
 }
 function itemSource(item: LibraryItem, lang: Lang) {
   return isVideo(item) ? pick(item.source.label, lang) : `${item.source.book} · ${item.source.author}`;
@@ -53,23 +53,23 @@ export default function Learn() {
   const match = (hay: string[]) => !q.trim() || hay.join(" ").toLowerCase().includes(q.trim().toLowerCase());
   const theories = THEORIES.filter((x) =>
     match([
-      x.title[lang],
-      x.principle[lang],
+      pickL(x.title, lang),
+      pickL(x.principle, lang),
       x.source.book,
       x.source.author,
       ...x.keywords,
-      ...x.skills.map((k) => skillById(k).name[lang]),
+      ...x.skills.map((k) => pickL(skillById(k).name, lang)),
     ]),
   );
   const cases = CASES.filter((x) =>
     match([
-      x.title[lang],
-      x.situation[lang],
-      x.takeaway[lang],
+      pickL(x.title, lang),
+      pickL(x.situation, lang),
+      pickL(x.takeaway, lang),
       x.source.book,
       x.source.author,
       ...x.keywords,
-      ...x.skills.map((k) => skillById(k).name[lang]),
+      ...x.skills.map((k) => pickL(skillById(k).name, lang)),
     ]),
   );
   const videos = VIDEO_LESSONS.filter(video => matchesVideo(video, q));
@@ -203,7 +203,7 @@ export default function Learn() {
                     <div className={video ? "video-library-intro" : "contents"}>
                       {video && <span className="video-library-poster"><Image src={it.video.cover} alt="" fill sizes="96px" loading="lazy" /></span>}
                       <span className={video ? "video-library-description" : "contents"}>
-                        <span className="display block text-[18px] leading-snug">{it.title[lang]}</span>
+                        <span className="display block text-[18px] leading-snug">{pickL(it.title, lang)}</span>
                         <span className={clsx("block text-[13px] text-ink-3 line-clamp-2 leading-snug", isOpen && "hidden lg:line-clamp-2")}>
                           {itemPreview(it, lang)}
                         </span>
@@ -259,7 +259,7 @@ export default function Learn() {
                 <KindMark theory={"principle" in selected} video={isVideo(selected)} />
                 {isVideo(selected) ? t(lang, "ln_videos") : "principle" in selected ? t(lang, "rp_theory") : t(lang, "rp_case")}
               </span>
-              <h2 className="display text-[26px] leading-tight">{selected.title[lang]}</h2>
+              <h2 className="display text-[26px] leading-tight">{pickL(selected.title, lang)}</h2>
             </header>
             <div className="flex flex-col gap-4">
               <ItemBody it={selected} lang={lang} saved={bookmarks.includes(selected.id)} onSave={() => toggleBookmark(selected.id)} onPractice={start} />
@@ -303,11 +303,11 @@ function ItemBody({ it, lang, saved, onSave, onPractice, onClose }: { it: Librar
           <ul>
             {related.map(({ scene }) => (
               <li key={scene.id}>
-                <button onClick={() => onPractice(scene)} className="notebook-row press w-full flex items-start gap-3 py-4 text-left" aria-label={`${scene.title[lang]} · ${t(lang, "ln_scene_prepare")}`}>
+                <button onClick={() => onPractice(scene)} className="notebook-row press w-full flex items-start gap-3 py-4 text-left" aria-label={`${pickL(scene.title, lang)} · ${t(lang, "ln_scene_prepare")}`}>
                   <ScenarioCover scenario={scene} size={44} />
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[14px] font-semibold leading-snug">{scene.title[lang]}</span>
-                    <span className="block mt-1 text-[12px] text-ink-3 leading-relaxed">{scene.hook[lang]}</span>
+                    <span className="block text-[14px] font-semibold leading-snug">{pickL(scene.title, lang)}</span>
+                    <span className="block mt-1 text-[12px] text-ink-3 leading-relaxed">{pickL(scene.hook, lang)}</span>
                     <span className="block mt-2 text-[12px] text-ink-3 num">{scene.minutes} {t(lang, "min")} · {t(lang, `diff_${scene.difficulty}` as "diff_1")}</span>
                   </span>
                   <ArrowRight size={16} className="text-accent-deep shrink-0 mt-1" aria-hidden />

@@ -14,7 +14,7 @@ import { stopSpeaking, unlockSpeech } from "@/lib/speech";
 import { DEFAULT_PATIENCE, useApp, useLang } from "@/store/useApp";
 import { t, pick } from "@/lib/i18n";
 import { clockMarks, PatiencePicker } from "@/components/practice/ReplyClock";
-import { COMPETENCIES, SKILLS, type SkillId } from "@/data/taxonomy";
+import { pickL, COMPETENCIES, SKILLS, type SkillId } from "@/data/taxonomy";
 import { compColor } from "@/lib/format";
 import { AvatarFigure, learnerSeed } from "@/data/avatars";
 import { AvatarPicker } from "@/components/AvatarPicker";
@@ -320,13 +320,13 @@ export default function Settings() {
           {COMPETENCIES.map((c) => (
             <div key={c.id} className="flex flex-col gap-2">
               <span className="eyebrow" style={{ color: compColor(c.id, 0.45, 0.09) }}>
-                {c.name[lang]}
+                {pickL(c.name, lang)}
               </span>
               <div className="flex flex-wrap gap-2">
                 {SKILLS.filter((s) => s.competency === c.id).map((s) => (
                   <Chip key={s.id} active={profile.goals.includes(s.id)} onClick={() => toggleGoal(s.id)}>
                     {profile.goals.includes(s.id) && <Check size={12} aria-hidden />}
-                    {s.name[lang]}
+                    {pickL(s.name, lang)}
                   </Chip>
                 ))}
               </div>

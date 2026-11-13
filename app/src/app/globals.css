@@ -2,8 +2,10 @@
 
 /* Native recovery must work before React and respect the invitation URL language. */
 span[data-startup-language="en"] { display: none; }
-html[data-startup-language="en"] [data-startup-language="zh"] { display: none; }
-html[data-startup-language="en"] span[data-startup-language="en"] { display: inline; }
+html[data-startup-language="en"] [data-startup-language="zh"],
+html[data-startup-language="ru"] [data-startup-language="zh"] { display: none; }
+html[data-startup-language="en"] span[data-startup-language="en"],
+html[data-startup-language="ru"] span[data-startup-language="en"] { display: inline; }
 .startup-recovery {
   display: none;
   position: fixed;

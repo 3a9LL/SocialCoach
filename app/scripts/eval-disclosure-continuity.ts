@@ -1,3 +1,4 @@
+import { pickL } from "../src/data/taxonomy";
 /** Real-model replay of authored fiction, never private learner records.
  * Run in app/ with the existing server model; output is evidence for manual review. */
 import assert from 'node:assert/strict';
@@ -70,7 +71,7 @@ async function main(){
  for(const label of (['previous','current'] as const).filter(label=>!phase||phase===label)){
   const results=await Promise.allSettled(selected.map(async test=>{
    const scenario=scenarioById(test.id)!;
-   const messages:ChatMessage[]=[{id:'opening',role:'npc',characterId:scenario.opening.characterId,text:scenario.opening.text[test.lang],ts:0},...(test.prior??[])];
+   const messages:ChatMessage[]=[{id:'opening',role:'npc',characterId:scenario.opening.characterId,text:pickL(scenario.opening.text,test.lang),ts:0},...(test.prior??[])];
    for(let turn=1;turn<=test.lines.length;turn++){
     const learner=test.lines[turn-1];messages.push({id:'u'+turn,role:'learner',text:learner,ts:turn*2});
     let repairs=0,preview='',modelRaw='';const start=Date.now();

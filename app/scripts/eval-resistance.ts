@@ -1,3 +1,4 @@
+import { pickL } from "../src/data/taxonomy";
 /** Small live synthetic resistance checks; configured models only, no stored practice records.
  * npx tsx --env-file=.env.local scripts/eval-resistance.ts
  */
@@ -21,7 +22,7 @@ async function main() {
     const scenario = { ...base, characters: base.characters.map(c => c.playable ? c : { ...c, hidden: { zh: privateMarker, en: privateMarker } }) };
     const learnerCharacterId = scenario.characters.find(c => c.playable)!.id;
     const messages = [
-      { id: "opening", role: "npc" as const, characterId: scenario.opening.characterId, text: scenario.opening.text[lang], ts: 1 },
+      { id: "opening", role: "npc" as const, characterId: scenario.opening.characterId, text: pickL(scenario.opening.text, lang), ts: 1 },
       { id: "attack", role: "learner" as const, text, ts: 2 },
     ];
     const raw = await runRoleplay({ scenario, learnerCharacterId, messages, lang }, serverLLM, FAST_MODEL);

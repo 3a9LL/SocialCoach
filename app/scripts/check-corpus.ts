@@ -1,3 +1,4 @@
+import { pickL } from "../src/data/taxonomy";
 /** Run from app/: npx tsx scripts/check-corpus.ts */
 import assert from "node:assert/strict";
 import { retrieveKnowledge, retrieveScenario } from "../src/lib/retrieval";
@@ -77,7 +78,7 @@ for (const s of [...SCENARIOS_D, ...SCENARIOS_E]) {
   for (const lang of ["zh", "en"] as const) {
     const session = buildSession(SCENARIOS.find((item) => item.id === s.id)!, "arena", lang);
     assert.equal(session.learnerCharacterId, "you");
-    assert.notEqual(session.scenario.characters[0].role[lang], lang === "zh" ? "你自己" : "Yourself");
+    assert.notEqual(pickL(session.scenario.characters[0].role, lang), lang === "zh" ? "你自己" : "Yourself");
   }
 }
 assert.equal(THEORIES_C.length, 8);

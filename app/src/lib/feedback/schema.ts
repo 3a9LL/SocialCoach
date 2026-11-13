@@ -9,7 +9,7 @@ export const feedbackSchema = z.object({
   tags: z.array(z.enum(["slow", "error", "mobile", "too_easy", "out_of_role", "missed_context", "wrong_quote", "unclear", "other"])).max(3).default([]),
   rating: z.enum(["helpful", "unhelpful"]).optional(),
   page: z.enum(["/", "/arena", "/learn", "/progress", "/settings", "/rehearse", "/onboarding", "/practice"]),
-  lang: z.enum(["zh", "en"]),
+  lang: z.enum(["zh", "en", "ru"]),
 }).strict();
 export type Feedback = z.infer<typeof feedbackSchema>;
 export function feedbackPage(path: string): Feedback["page"] {

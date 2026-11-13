@@ -6,7 +6,7 @@ import { track } from "@/lib/analytics/track";
 import { AnimatePresence, motion } from "framer-motion";
 import { clsx } from "clsx";
 import { ArrowRight, ArrowUpRight, ChevronDown } from "lucide-react";
-import { COMPETENCIES, CONTEXTS, SKILLS, skillById, type ContextId, type SkillId } from "@/data/taxonomy";
+import { pickL, COMPETENCIES, CONTEXTS, SKILLS, skillById, type ContextId, type SkillId } from "@/data/taxonomy";
 import { CONTEXT_HUES } from "@/data/scenario-icons";
 import { ContextIllustration } from "@/data/context-illustrations";
 import { t } from "@/lib/i18n";
@@ -132,19 +132,19 @@ export default function Onboarding() {
                     <div key={c.id} className="card overflow-hidden">
                       <button aria-expanded={isOpen} aria-controls={`onboarding-${c.id}`} onClick={() => setOpen(isOpen ? null : c.id)} className="press w-full flex items-center gap-3 px-4 h-14 text-left">
                         <span className="h-2.5 w-2.5 rounded-full" style={{ background: compColor(c.id) }} />
-                        <span className="flex-1 font-semibold text-[15px]">{c.name[lang]}</span>
+                        <span className="flex-1 font-semibold text-[15px]">{pickL(c.name, lang)}</span>
                         {chosen > 0 && <span className="num text-[13px] text-ink-3">{chosen}</span>}
                         <ChevronDown size={18} className={clsx("text-ink-3 transition-transform", isOpen && "rotate-180")} />
                       </button>
                       <div id={`onboarding-${c.id}`} hidden={!isOpen}>
                         <div className="overflow-hidden">
-                          <p className="px-4 text-[13px] text-ink-3 -mt-1 mb-3">{c.description[lang]}</p>
+                          <p className="px-4 text-[13px] text-ink-3 -mt-1 mb-3">{pickL(c.description, lang)}</p>
                           <div className="px-4 pb-4 flex flex-wrap gap-2">
                             {skills.map((s) => {
                               const on = goals.includes(s.id);
                               return (
                                 <Chip key={s.id} active={on} onClick={() => toggleGoal(s.id)} style={on ? { background: compColor(c.id, 0.42, 0.1), borderColor: compColor(c.id, 0.42, 0.1) } : undefined}>
-                                  {s.name[lang]}
+                                  {pickL(s.name, lang)}
                                   {s.popular && !on && <span className="h-1.5 w-1.5 rounded-full" style={{ background: compColor(c.id) }} />}
                                 </Chip>
                               );
@@ -173,12 +173,12 @@ export default function Onboarding() {
                     <li key={g} className="card p-4 rise" style={{ "--i": i } as React.CSSProperties}>
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="font-semibold text-[15px]">{s.name[lang]}</p>
-                          <p className="text-[13px] text-ink-3 mt-0.5">{s.behavior[lang]}</p>
+                          <p className="font-semibold text-[15px]">{pickL(s.name, lang)}</p>
+                          <p className="text-[13px] text-ink-3 mt-0.5">{pickL(s.behavior, lang)}</p>
                         </div>
                         <Level value={v} color={compColor(s.competency)} className="mt-1.5" />
                       </div>
-                      <input type="range" min={1} max={5} step={0.5} value={v} onChange={(e) => setRates((r) => ({ ...r, [g]: Number(e.target.value) }))} className="mt-3" aria-label={s.name[lang]} />
+                      <input type="range" min={1} max={5} step={0.5} value={v} onChange={(e) => setRates((r) => ({ ...r, [g]: Number(e.target.value) }))} className="mt-3" aria-label={pickL(s.name, lang)} />
                       <div className="flex justify-between text-[11px] text-ink-3 -mt-1">
                         <span>{t(lang, "rate_1")}</span>
                         <span className="font-medium" style={{ color: compColor(s.competency, 0.45, 0.09) }}>{t(lang, (`rate_${Math.round(v)}` as "rate_1"))}</span>
@@ -216,8 +216,8 @@ export default function Onboarding() {
                       >
                         <ContextIllustration context={c.id} size={34} />
                       </span>
-                      <span className="font-semibold text-[15px]">{c.name[lang]}</span>
-                      <span className="text-[12px] text-ink-3 leading-snug">{c.types.slice(0, 3).map((x) => x[lang]).join(" · ")}</span>
+                      <span className="font-semibold text-[15px]">{pickL(c.name, lang)}</span>
+                      <span className="text-[12px] text-ink-3 leading-snug">{c.types.slice(0, 3).map((x) => pickL(x, lang)).join(" · ")}</span>
                     </button>
                   );
                 })}

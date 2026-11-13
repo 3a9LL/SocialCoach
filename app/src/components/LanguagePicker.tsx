@@ -1,14 +1,20 @@
 "use client";
 import type { Lang } from "@/data/taxonomy";
-import { pick, t } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
+
+const OPTIONS: { value: Lang; htmlLang: string; label: string }[] = [
+  { value: "zh", htmlLang: "zh-CN", label: "中文" },
+  { value: "en", htmlLang: "en", label: "English" },
+  { value: "ru", htmlLang: "ru", label: "Русский" },
+];
 
 export function LanguagePicker({ lang, onChange }: { lang: Lang; onChange: (lang: Lang) => void }) {
   return (
     <div role="group" aria-label={t(lang, "st_language")} className="language-picker">
-      {(["zh", "en"] as const).map((value) => (
-        <button key={value} type="button" lang={value === "zh" ? "zh-CN" : "en"} aria-pressed={lang === value} onClick={() => onChange(value)}
+      {OPTIONS.map(({ value, htmlLang, label }) => (
+        <button key={value} type="button" lang={htmlLang} aria-pressed={lang === value} onClick={() => onChange(value)}
           className="language-option press">
-          <span>{pick(value === "zh" ? { zh: "中文", en: "中文" } : { zh: "English", en: "English" }, lang)}</span>
+          <span>{label}</span>
         </button>
       ))}
     </div>

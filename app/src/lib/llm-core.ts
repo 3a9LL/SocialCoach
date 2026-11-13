@@ -9,6 +9,7 @@
  */
 import { fixUnescapedQuotes, parsePartialJSON } from "./partial-json";
 import type { ModelIssue } from "./model-status";
+import type { Lang } from "@/data/taxonomy";
 
 export type Provider = "anthropic" | "openai";
 export type TokenParam = "max_tokens" | "max_completion_tokens";
@@ -31,7 +32,7 @@ export interface SystemPart {
 }
 
 export interface ChatOpts {
-  lang?:"zh"|"en";
+  lang?:Lang;
   /** Cancels one-shot calls, including 3D page navigation and its time limit. */
   signal?: AbortSignal;
   model?: string;

@@ -17,7 +17,7 @@ import { schedule } from "@/lib/client-api";
 import { historyFor, npcsOf } from "@/lib/session-utils";
 import { track } from "@/lib/analytics/track";
 import type { Session } from "@/lib/types";
-import { contextById } from "@/data/taxonomy";
+import { pickL, contextById } from "@/data/taxonomy";
 import { learnerSeed } from "@/data/avatars";
 import { arenaReturnPath } from "@/lib/arena-location";
 import { practiceTurnLimit } from "@/lib/practice-policy";
@@ -61,7 +61,7 @@ export function Briefing({ session }: { session: Session }) {
   const learner = sc.characters.find((c) => c.id === session.learnerCharacterId);
   const npcs = npcsOf(sc, session.learnerCharacterId);
   const ctx = contextById(sc.context);
-  const objectives = session.adaptation?.objectives ?? sc.objectives.map((o) => o[lang]);
+  const objectives = session.adaptation?.objectives ?? sc.objectives.map((o) => pickL(o, lang));
 
   // The choice made here is remembered as the default for the next scene; the
   // scene itself takes a snapshot, so the mid-scene toggle touches only itself.
@@ -80,8 +80,8 @@ export function Briefing({ session }: { session: Session }) {
       <div className="contents lg:block">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }} className="px-5 mt-3 flex flex-col gap-6 pb-36 lg:px-0 lg:mt-2 lg:pb-0">
         <header className="flex flex-col gap-2">
-          <p className="eyebrow">{t(lang, "pr_briefing")} · {ctx.name[lang]} · {sc.contextType[lang]}</p>
-          <h1 className="display text-[30px] leading-[1.15]">{sc.title[lang]}</h1>
+          <p className="eyebrow">{t(lang, "pr_briefing")} · {pickL(ctx.name, lang)} · {pickL(sc.contextType, lang)}</p>
+          <h1 className="display text-[30px] leading-[1.15]">{pickL(sc.title, lang)}</h1>
           <div className="flex items-center gap-3 text-[13px] text-ink-2 num">
             <span className="inline-flex shrink-0 whitespace-nowrap items-center gap-1"><Clock size={13} />{sc.minutes} {t(lang, "min")}</span>
             <span className="inline-flex items-center gap-1"><MessageSquare size={13} />{t(lang, "pr_segment_budget", { n: practiceTurnLimit(session) })}</span>
@@ -92,10 +92,10 @@ export function Briefing({ session }: { session: Session }) {
 
             {learner && (
               <div className="flex items-center gap-3 inset px-3 py-2.5">
-                <Avatar imageData={settings.avatarImage} name={learner.name[lang]} hue={learner.hue} size={40} seed={learnerSeed(profile?.name ?? "", settings.avatarSeed, settings.avatarPortrait)} />
+                <Avatar imageData={settings.avatarImage} name={pickL(learner.name, lang)} hue={learner.hue} size={40} seed={learnerSeed(profile?.name ?? "", settings.avatarSeed, settings.avatarPortrait)} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[16px] font-semibold">{t(lang, "pr_you_play")} · {learner.role[lang]}</p>
-                  {learner.id !== "you" && <p className="text-[13px] text-ink-2 truncate">{learner.name[lang]}</p>}
+                  <p className="text-[16px] font-semibold">{t(lang, "pr_you_play")} · {pickL(learner.role, lang)}</p>
+                  {learner.id !== "you" && <p className="text-[13px] text-ink-2 truncate">{pickL(learner.name, lang)}</p>}
                 </div>
               </div>
             )}
@@ -104,7 +104,7 @@ export function Briefing({ session }: { session: Session }) {
           <div className="card p-5"><Stages title={t(lang, "pr_preparing")} steps={tList(lang, "home_scheduling_steps").slice(3)} /></div>
         ) : (
           <>
-            <p className="text-[16px] leading-relaxed text-ink">{session.adaptation?.briefing ?? sc.background[lang]}</p>
+            <p className="text-[16px] leading-relaxed text-ink">{session.adaptation?.briefing ?? pickL(sc.background, lang)}</p>
             {err && <div role="alert" className="rounded-[var(--radius)] bg-danger-soft p-4 flex flex-col gap-2">
               <p className="text-[13px] text-danger">{err}</p>
               <Button requiresModel variant="secondary" onClick={() => { setErr(null); setAttempt((v) => v + 1); }}>{t(lang, "pr_preparation_retry")}</Button>
@@ -117,10 +117,10 @@ export function Briefing({ session }: { session: Session }) {
           <div className="flex flex-col gap-3">
             {npcs.map((c) => (
               <div key={c.id} className="flex items-start gap-3 px-1">
-                <Avatar name={c.name[lang]} hue={c.hue} size={40} />
+                <Avatar name={pickL(c.name, lang)} hue={c.hue} size={40} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[15px] font-semibold">{c.name[lang]} <span className="text-ink-3 font-normal">· {c.role[lang]}</span></p>
-                  <p className="text-[14px] text-ink-2 leading-relaxed mt-1">{c.personality[lang]}</p>
+                  <p className="text-[15px] font-semibold">{pickL(c.name, lang)} <span className="text-ink-3 font-normal">· {pickL(c.role, lang)}</span></p>
+                  <p className="text-[14px] text-ink-2 leading-relaxed mt-1">{pickL(c.personality, lang)}</p>
                 </div>
               </div>
             ))}
@@ -144,7 +144,7 @@ export function Briefing({ session }: { session: Session }) {
       <div className="relative h-24 shrink-0 bg-paper-deep lg:h-28 lg:rounded-[var(--radius-lg)] lg:overflow-hidden">
         <ScenarioCover scenario={sc} full />
         <div className="absolute inset-x-0 top-0 px-3 pt-2 flex items-center justify-end">
-          <span className="h-8 px-3 inline-flex items-center gap-1.5 rounded-full bg-paper/85 text-[13px] font-medium">{ctx.glyph} {ctx.name[lang]} · {sc.contextType[lang]}</span>
+          <span className="h-8 px-3 inline-flex items-center gap-1.5 rounded-full bg-paper/85 text-[13px] font-medium">{ctx.glyph} {pickL(ctx.name, lang)} · {pickL(sc.contextType, lang)}</span>
         </div>
         <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-paper to-transparent lg:hidden" />
       </div>

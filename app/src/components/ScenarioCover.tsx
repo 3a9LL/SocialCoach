@@ -1,4 +1,5 @@
 "use client";
+import { pickL } from "@/data/taxonomy";
 import { clsx } from "clsx";
 import type { Scenario } from "@/data/corpus/types";
 import { AvatarFigure } from "@/data/avatars";
@@ -65,7 +66,7 @@ export function ScenarioCover({
   }
 
   const speaker = npc;
-  const [head, rest] = firstClause(scenario.opening.text[lang]);
+  const [head, rest] = firstClause(pickL(scenario.opening.text, lang));
   // A full-width 「 hangs by its whole em; a curly quote by about half of one.
   const hang = lang === "zh" ? "1em" : "0.5em";
 
@@ -87,10 +88,10 @@ export function ScenarioCover({
         <div className="absolute inset-x-0 bottom-0 flex flex-col gap-4 pl-16 pr-8 pb-[calc(var(--rule)*2)]">
           {speaker && (
             <span className="flex items-center gap-3">
-              <AvatarFigure seed={speaker.name[lang]} hue={speaker.hue} size={36} />
+              <AvatarFigure seed={pickL(speaker.name, lang)} hue={speaker.hue} size={36} />
               <span className="flex flex-col min-w-0">
-                <span className="eyebrow text-ink-2 truncate">{speaker.role[lang]}</span>
-                {speaker.name[lang] !== speaker.role[lang] && <span className="text-[12px] text-ink-2 truncate">{speaker.name[lang]}</span>}
+                <span className="eyebrow text-ink-2 truncate">{pickL(speaker.role, lang)}</span>
+                {pickL(speaker.name, lang) !== pickL(speaker.role, lang) && <span className="text-[12px] text-ink-2 truncate">{pickL(speaker.name, lang)}</span>}
               </span>
             </span>
           )}
@@ -132,7 +133,7 @@ export function ScenarioCover({
         {speaker && (
           <span className="flex items-center gap-1.5 eyebrow text-ink-2">
             <span className="h-2 w-2 rounded-full shrink-0" style={{ background: "var(--scene-color)" }} />
-            <span className="truncate">{speaker.role[lang]}</span>
+            <span className="truncate">{pickL(speaker.role, lang)}</span>
           </span>
         )}
 
